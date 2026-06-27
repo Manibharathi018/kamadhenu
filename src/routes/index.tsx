@@ -138,9 +138,9 @@ function HomePage() {
       </section>
 
       {/* CATEGORIES */}
-      <section className="mx-auto max-w-7xl px-6 py-16">
+      <section className="mx-auto max-w-7xl px-6 py-8">
         <SectionHeading kicker="Shop by Weave" title="Our Categories" />
-        <div className="mt-10 flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="mt-6 flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {categories.map((c, i) => (
             <motion.div key={c} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
               transition={{ delay: i * 0.05, duration: 0.5 }}
@@ -159,9 +159,9 @@ function HomePage() {
       </section>
 
       {/* COLLECTION CAROUSEL */}
-      <section className="mx-auto max-w-7xl px-6 py-16">
+      <section className="mx-auto max-w-7xl px-6 py-8">
         <SectionHeading kicker="Curated For You" title="Our Collections" />
-        <div className="mt-10 flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="mt-6 flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {collections.map((col, i) => (
             <motion.div key={col.title} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
               transition={{ delay: i * 0.08, duration: 0.6 }}
@@ -181,9 +181,9 @@ function HomePage() {
       </section>
 
       {/* FEATURED PRODUCTS */}
-      <section className="mx-auto max-w-7xl px-6 py-16">
+      <section className="mx-auto max-w-7xl px-6 py-8">
         <SectionHeading kicker="Just Arrived" title="Heirloom Pieces" />
-        <div className="mt-10 grid gap-x-6 gap-y-10 grid-cols-2 lg:grid-cols-4">
+        <div className="mt-6 grid gap-x-6 gap-y-10 grid-cols-2 lg:grid-cols-4">
           {products.slice(0, 4).map(p => <ProductCard key={p.id} product={p} />)}
         </div>
         <div className="mt-12 text-center">
@@ -195,7 +195,7 @@ function HomePage() {
 
       {/* HERITAGE */}
       <section className="bg-card border-y border-border">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-6 py-20 md:grid-cols-2">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-6 py-12 md:grid-cols-2">
           <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}
             className="relative overflow-hidden rounded-2xl shadow-luxe">
             <img src={heritage} alt="Handwoven Kanchipuram silk" width={1200} height={900} loading="lazy" className="h-full w-full object-cover aspect-[4/3]" />

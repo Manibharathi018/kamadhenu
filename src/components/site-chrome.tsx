@@ -3,6 +3,7 @@ import { Search, User, Heart, ShoppingBag, Menu, X } from "lucide-react";
 import { useCart, cartTotals } from "@/lib/cart-store";
 import { useState } from "react";
 import { useAuth } from "@/lib/auth-context";
+import { useProducts } from "@/lib/hooks";
 import logoUrl from "@/assets/logo.png";
 
 export function SiteHeader() {
@@ -10,8 +11,17 @@ export function SiteHeader() {
   const { count } = cartTotals(cart);
   const [open, setOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const { data: products = [] } = useProducts();
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  const suggestions = searchQuery.trim().length > 1
+    ? products.filter(p => 
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        String(p.id).toLowerCase().includes(searchQuery.toLowerCase())
+      ).slice(0, 5)
+    : [];
 
   const nav = [
     { to: "/", label: "Home" },
@@ -76,22 +86,47 @@ export function SiteHeader() {
         {isSearchOpen && (
           <div className="absolute top-full left-0 right-0 border-b border-border bg-ivory p-4 shadow-md z-40">
             <div className="mx-auto max-w-2xl relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <input 
                 type="search" 
-                placeholder="Search for sarees by name, color, or fabric..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by product name or ID..." 
                 autoFocus 
-                className="w-full rounded-full border border-gold/40 bg-white py-2 pl-10 pr-4 outline-none focus:border-royal focus:ring-1 focus:ring-royal transition-all"
+                className="w-full rounded-md border border-gold/40 bg-white py-2 pl-10 pr-4 outline-none focus:border-royal focus:ring-1 focus:ring-royal transition-all"
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && e.currentTarget.value) {
-                    navigate({ to: '/shop', search: { q: e.currentTarget.value } });
+                  if (e.key === 'Enter' && searchQuery) {
+                    navigate({ to: '/shop', search: { q: searchQuery } });
                     setIsSearchOpen(false);
+                    setSearchQuery("");
                   }
                 }}
               />
+              
+              {suggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-md shadow-xl border border-border overflow-hidden z-50">
+                  {suggestions.map(p => (
+                    <Link key={p.id} to={`/product/${p.id}`} 
+                      onClick={() => { setIsSearchOpen(false); setSearchQuery(""); }}
+                      className="flex items-center gap-3 p-3 hover:bg-muted transition-colors border-b last:border-0 border-border">
+                      <img src={p.image} className="w-10 h-12 object-cover rounded shadow-sm" alt={p.name} />
+                      <div className="flex-1 text-left">
+                        <div className="font-medium text-sm text-royal line-clamp-1">{p.name}</div>
+                        <div className="text-xs text-muted-foreground mt-0.5">ID: {p.id}</div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+              {searchQuery.trim().length > 1 && suggestions.length === 0 && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-md shadow-xl border border-border p-4 text-center text-sm text-muted-foreground z-50">
+                  No products found for "{searchQuery}"
+                </div>
+              )}
             </div>
           </div>
         )}
+
 
         {open && (
           <div className="lg:hidden border-t border-border bg-ivory">
