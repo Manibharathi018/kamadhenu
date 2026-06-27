@@ -184,7 +184,7 @@ function HomePage() {
       <section className="mx-auto max-w-7xl px-6 py-8">
         <SectionHeading kicker="Just Arrived" title="Heirloom Pieces" />
         <div className="mt-6 grid gap-x-6 gap-y-10 grid-cols-2 lg:grid-cols-4">
-          {products.slice(0, 4).map(p => <ProductCard key={p.id} product={p} />)}
+          {[...products].reverse().slice(0, 4).map(p => <ProductCard key={p.id} product={p} />)}
         </div>
         <div className="mt-12 text-center">
           <Link to="/shop" className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-royal hover:text-maroon">
