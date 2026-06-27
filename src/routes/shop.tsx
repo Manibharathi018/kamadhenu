@@ -6,22 +6,32 @@ import { useProducts } from "@/lib/hooks";
 import { SlidersHorizontal } from "lucide-react";
 
 export const Route = createFileRoute("/shop")({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      q: (search.q as string) || undefined,
+    }
+  },
   head: () => ({ meta: [{ title: "Shop Sarees — Kamadhenu Silks" }, { name: "description", content: "Browse our handwoven Kanchipuram silk saree collection." }] }),
   component: ShopPage,
 });
 
 function ShopPage() {
+  const { q } = Route.useSearch();
   const [sort, setSort] = useState("new");
   const [occ, setOcc] = useState<string>("all");
   const { data: products = [], isLoading, error } = useProducts();
 
   const list = useMemo(() => {
     let l = [...products];
+    if (q) {
+      const lowerQ = q.toLowerCase();
+      l = l.filter(p => p.name.toLowerCase().includes(lowerQ) || p.description.toLowerCase().includes(lowerQ) || p.category.toLowerCase().includes(lowerQ));
+    }
     if (occ !== "all") l = l.filter(p => p.occasion === occ);
     if (sort === "low") l.sort((a, b) => a.price - b.price);
     if (sort === "high") l.sort((a, b) => b.price - a.price);
     return l;
-  }, [sort, occ, products]);
+  }, [sort, occ, products, q]);
 
   if (error) {
     return (

@@ -1,5 +1,5 @@
-import { Link } from "@tanstack/react-router";
-import { Search, User, Heart, ShoppingBag, Menu } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Search, User, Heart, ShoppingBag, Menu, X } from "lucide-react";
 import { useCart, cartTotals } from "@/lib/cart-store";
 import { useState } from "react";
 import { useAuth } from "@/lib/auth-context";
@@ -9,6 +9,8 @@ export function SiteHeader() {
   const cart = useCart();
   const { count } = cartTotals(cart);
   const [open, setOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const navigate = useNavigate();
   const { user } = useAuth();
 
   const nav = [
@@ -29,16 +31,16 @@ export function SiteHeader() {
         </div>
       </div>
 
-      <div className="border-b border-border bg-ivory/95 backdrop-blur">
-        <div className="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 px-4 py-4 md:px-6">
-          <Link to="/" className="flex items-center gap-2">
-            <img src={logoUrl} alt="Kamadhenu Silks Logo" className="h-9 w-auto object-contain rounded-full border border-gold/25" />
+      <div className="border-b border-border bg-ivory/95 backdrop-blur relative">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 md:px-6">
+          <Link to="/" className="flex items-center gap-2 flex-shrink-0">
+            <img src={logoUrl} alt="Kamadhenu Silks Logo" className="h-8 md:h-9 w-auto object-contain rounded-full border border-gold/25" />
             <span className="font-display text-xl md:text-2xl tracking-tight text-royal">
               Kamadhenu<span className="text-gradient-gold">·</span>Silks
             </span>
           </Link>
 
-          <nav className="hidden lg:flex items-center justify-center gap-8 text-sm font-medium">
+          <nav className="hidden lg:flex flex-1 items-center justify-center gap-8 text-sm font-medium">
             {nav.map(n => (
               <Link key={n.label} to={n.to}
                 className="relative text-foreground/80 hover:text-royal transition-colors after:absolute after:left-0 after:-bottom-1 after:h-px after:w-0 after:bg-gold after:transition-all hover:after:w-full">
@@ -47,8 +49,10 @@ export function SiteHeader() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-1 md:gap-2 justify-end">
-            <button className="p-2 hover:text-royal transition-colors" aria-label="Search"><Search className="h-5 w-5" /></button>
+          <div className="flex items-center gap-1 md:gap-2 justify-end flex-shrink-0">
+            <button onClick={() => setIsSearchOpen(!isSearchOpen)} className="p-2 hover:text-royal transition-colors" aria-label="Search">
+              {isSearchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
+            </button>
             {user ? (
               <Link to="/dashboard" className="p-2 hover:text-royal transition-colors flex items-center justify-center" aria-label="Account">
                 <div className="h-5 w-5 rounded-full bg-gold text-royal font-bold flex items-center justify-center text-xs">
@@ -68,6 +72,26 @@ export function SiteHeader() {
             <button className="lg:hidden p-2" onClick={() => setOpen(o => !o)} aria-label="Menu"><Menu className="h-5 w-5" /></button>
           </div>
         </div>
+
+        {isSearchOpen && (
+          <div className="absolute top-full left-0 right-0 border-b border-border bg-ivory p-4 shadow-md z-40">
+            <div className="mx-auto max-w-2xl relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <input 
+                type="search" 
+                placeholder="Search for sarees by name, color, or fabric..." 
+                autoFocus 
+                className="w-full rounded-full border border-gold/40 bg-white py-2 pl-10 pr-4 outline-none focus:border-royal focus:ring-1 focus:ring-royal transition-all"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && e.currentTarget.value) {
+                    navigate({ to: '/shop', search: { q: e.currentTarget.value } });
+                    setIsSearchOpen(false);
+                  }
+                }}
+              />
+            </div>
+          </div>
+        )}
 
         {open && (
           <div className="lg:hidden border-t border-border bg-ivory">
