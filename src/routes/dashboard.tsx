@@ -1,13 +1,18 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { Package, MapPin, Heart, Settings, LogOut } from "lucide-react";
 import { products, formatINR } from "@/lib/products";
 import { useSignOut, useUpdateUserMetadata } from "@/lib/hooks";
 import { useAuth } from "@/lib/auth-context";
+import { useWishlist, wishlistStore } from "@/lib/wishlist-store";
+import { X as XIcon } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({ meta: [{ title: "My Account — Kamadhenu Silks" }] }),
+  validateSearch: (search: Record<string, unknown>) => ({
+    tab: (search.tab as string) || "orders",
+  }),
   component: Dashboard,
 });
 
@@ -19,7 +24,10 @@ const tabs = [
 ] as const;
 
 function Dashboard() {
-  const [tab, setTab] = useState<(typeof tabs)[number]["id"]>("orders");
+  const search = useSearch({ from: "/dashboard" });
+  const [tab, setTab] = useState<(typeof tabs)[number]["id"]>(
+    (search.tab as (typeof tabs)[number]["id"]) || "orders"
+  );
   const { mutate: signOut } = useSignOut();
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -152,18 +160,50 @@ function Addresses({ userAddress, userName, userPhone }: { userAddress: string; 
 }
 
 function Wishlist() {
+  const wishlist = useWishlist();
+
+  if (wishlist.length === 0) {
+    return (
+      <div>
+        <h2 className="font-display text-2xl text-royal">Wishlist</h2>
+        <div className="mt-16 flex flex-col items-center justify-center text-center gap-4">
+          <div className="rounded-full bg-muted p-6">
+            <Heart className="h-10 w-10 text-muted-foreground" />
+          </div>
+          <p className="font-display text-xl text-foreground">No products added</p>
+          <p className="text-sm text-muted-foreground max-w-xs">Browse our collection and tap the heart icon on any saree to save it here.</p>
+          <Link
+            to="/shop"
+            className="mt-2 rounded-full bg-gold px-6 py-2.5 text-sm font-semibold uppercase tracking-widest text-foreground hover:opacity-90 transition-opacity"
+          >
+            Browse Collection
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h2 className="font-display text-2xl text-royal">Wishlist</h2>
       <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {products.slice(0, 3).map(p => (
-          <Link key={p.id} to="/product/$id" params={{ id: p.id }} className="group block">
-            <div className="aspect-[4/5] overflow-hidden rounded-md">
-              <img src={p.image} alt="" className="h-full w-full object-cover transition-transform group-hover:scale-105" />
-            </div>
-            <p className="mt-2 font-display">{p.name}</p>
-            <p className="text-sm text-royal">{formatINR(p.price)}</p>
-          </Link>
+        {wishlist.map((p) => (
+          <div key={p.id} className="group relative block">
+            <button
+              onClick={() => wishlistStore.remove(p.id)}
+              className="absolute right-2 top-2 z-10 grid h-7 w-7 place-items-center rounded-full bg-white/90 text-muted-foreground hover:text-red-500 transition-colors shadow"
+              aria-label="Remove from wishlist"
+            >
+              <XIcon className="h-3.5 w-3.5" />
+            </button>
+            <Link to="/product/$id" params={{ id: p.id }} className="block">
+              <div className="aspect-[4/5] overflow-hidden rounded-md">
+                <img src={p.image} alt={p.name} className="h-full w-full object-cover transition-transform group-hover:scale-105" />
+              </div>
+              <p className="mt-2 font-display">{p.name}</p>
+              <p className="text-sm text-royal">{formatINR(p.price)}</p>
+            </Link>
+          </div>
         ))}
       </div>
     </div>

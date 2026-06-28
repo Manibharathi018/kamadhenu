@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Search, User, Heart, ShoppingBag, Menu, X } from "lucide-react";
 import { useCart, cartTotals } from "@/lib/cart-store";
+import { useWishlist } from "@/lib/wishlist-store";
 import { useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useProducts } from "@/lib/hooks";
@@ -9,6 +10,8 @@ import logoUrl from "@/assets/logo.png";
 export function SiteHeader() {
   const cart = useCart();
   const { count } = cartTotals(cart);
+  const wishlist = useWishlist();
+  const wishlistCount = wishlist.length;
   const [open, setOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -72,7 +75,12 @@ export function SiteHeader() {
             ) : (
               <Link to="/login" className="p-2 hover:text-royal transition-colors" aria-label="Account"><User className="h-5 w-5" /></Link>
             )}
-            <Link to="/dashboard" className="p-2 hover:text-royal transition-colors hidden sm:block" aria-label="Wishlist"><Heart className="h-5 w-5" /></Link>
+            <Link to="/dashboard" search={{ tab: "wishlist" }} className="relative p-2 hover:text-royal transition-colors hidden sm:block" aria-label="Wishlist">
+              <Heart className={`h-5 w-5 ${wishlistCount > 0 ? "text-red-500 fill-red-500" : ""}`} />
+              {wishlistCount > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 grid h-5 w-5 place-items-center rounded-full bg-red-500 text-[10px] font-bold text-white">{wishlistCount}</span>
+              )}
+            </Link>
             <Link to="/cart" className="relative p-2 hover:text-royal transition-colors" aria-label="Cart">
               <ShoppingBag className="h-5 w-5" />
               {count > 0 && (

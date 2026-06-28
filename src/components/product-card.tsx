@@ -2,8 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { Heart } from "lucide-react";
 import type { Product } from "@/lib/products";
 import { formatINR } from "@/lib/products";
+import { wishlistStore, useWishlist } from "@/lib/wishlist-store";
 
 export function ProductCard({ product }: { product: Product }) {
+  const wishlist = useWishlist();
+  const isWishlisted = wishlist.some((p) => p.id === product.id);
+
   return (
     <Link to="/product/$id" params={{ id: product.id }}
       className="group block">
@@ -11,10 +15,20 @@ export function ProductCard({ product }: { product: Product }) {
         <img src={product.image} alt={product.name} loading="lazy"
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
         <div className="absolute inset-0 bg-gradient-to-t from-royal/40 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-        <button onClick={(e) => { e.preventDefault(); }}
-          className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-ivory/90 text-foreground/70 hover:text-maroon transition-colors backdrop-blur"
-          aria-label="Wishlist">
-          <Heart className="h-4 w-4" />
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            wishlistStore.toggle(product);
+          }}
+          className={`absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-ivory/90 backdrop-blur transition-colors ${
+            isWishlisted
+              ? "text-red-500"
+              : "text-foreground/70 hover:text-red-400"
+          }`}
+          aria-label={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+        >
+          <Heart className={`h-4 w-4 transition-all ${isWishlisted ? "fill-red-500" : ""}`} />
         </button>
         <div className="absolute bottom-3 left-3 rounded-full bg-gold/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-foreground">
           Silk Mark
