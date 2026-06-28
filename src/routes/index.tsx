@@ -6,11 +6,11 @@ import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { ProductCard } from "@/components/product-card";
 import { products } from "@/lib/products";
 import { useProducts } from "@/lib/hooks";
-import hero1 from "@/assets/hero-saree.jpg";
-import hero2 from "@/assets/saree-1.jpg";
-import hero3 from "@/assets/saree-2.jpg";
-import hero4 from "@/assets/saree-3.jpg";
-import hero5 from "@/assets/saree-4.jpg";
+import hero1 from "@/assets/herosectionimg1.png";
+import hero2 from "@/assets/herosectionimg2.png";
+import hero3 from "@/assets/herosectionimg3.png";
+import hero4 from "@/assets/herosectionimg4.png";
+import hero5 from "@/assets/herosectionimg5.png";
 import heritage from "@/assets/heritage.jpg";
 
 const heroImages = [hero1, hero2, hero3, hero4, hero5];
