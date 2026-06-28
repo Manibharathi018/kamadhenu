@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "../lib/auth-context";
 import { AdminProvider } from "../lib/admin-context";
+import { UserDataProvider } from "../lib/user-data-context";
 
 function NotFoundComponent() {
   return (
@@ -120,8 +121,10 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AdminProvider>
         <AuthProvider>
-          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-          <Outlet />
+          <UserDataProvider>
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <Outlet />
+          </UserDataProvider>
         </AuthProvider>
       </AdminProvider>
     </QueryClientProvider>

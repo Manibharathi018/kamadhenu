@@ -211,45 +211,59 @@ export const onAuthStateChange = (callback: (user: any) => void) => {
   });
 };
 
-// Admin functions - fetch orders
+// Order functions
+export const createOrder = async (order: {
+  user_id: string;
+  user_email: string;
+  user_name: string;
+  items: Array<{ product_id: string; name: string; price: number; quantity: number }>;
+  total: number;
+  status: string;
+  shipping_address?: string;
+  phone?: string;
+}): Promise<Order> => {
+  const { data, error } = await supabase
+    .from('Orders')
+    .insert([order])
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error creating order:', error);
+    throw error;
+  }
+
+  return data;
+};
+
+export const fetchUserOrders = async (userId: string): Promise<Order[]> => {
+  const { data, error } = await supabase
+    .from('Orders')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching user orders:', error);
+    return [];
+  }
+
+  return data || [];
+};
+
+// Admin functions - fetch all orders
 export const fetchAllOrders = async (): Promise<Order[]> => {
-  // For now, returning mock orders since we don't have a real orders table
-  // In production, this would fetch from a database
-  return [
-    {
-      id: 'ORD-001',
-      user_id: 'user-1',
-      user_email: 'customer@example.com',
-      user_name: 'Priya Iyer',
-      items: [{ product_id: 'kp-001', name: 'Rani Vastra Royal Maroon', price: 28500, quantity: 1 }],
-      total: 28500,
-      status: 'delivered',
-      created_at: new Date().toISOString(),
-    },
-    {
-      id: 'ORD-002',
-      user_id: 'user-2',
-      user_email: 'user@example.com',
-      user_name: 'Anjali Kumar',
-      items: [
-        { product_id: 'kp-002', name: 'Mayil Emerald Temple', price: 24900, quantity: 1 },
-        { product_id: 'kp-003', name: 'Neelambari Royal Blue', price: 26500, quantity: 1 },
-      ],
-      total: 51400,
-      status: 'shipped',
-      created_at: new Date().toISOString(),
-    },
-    {
-      id: 'ORD-003',
-      user_id: 'user-3',
-      user_email: 'buyer@example.com',
-      user_name: 'Deepa Sharma',
-      items: [{ product_id: 'kp-004', name: 'Swarna Mustard Festive', price: 18900, quantity: 2 }],
-      total: 37800,
-      status: 'processing',
-      created_at: new Date().toISOString(),
-    },
-  ];
+  const { data, error } = await supabase
+    .from('Orders')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching orders:', error);
+    return [];
+  }
+
+  return data || [];
 };
 
 export const getTodaysOrders = async (): Promise<Order[]> => {
@@ -272,4 +286,86 @@ export const searchProductById = async (id: string): Promise<Product | null> => 
 
 export const deleteProductById = async (id: string): Promise<void> => {
   return deleteProduct(id);
+};
+
+// ===== Cart DB operations =====
+export const fetchUserCart = async (
+  userId: string
+): Promise<Array<{ product_id: string; quantity: number; product_data: any }>> => {
+  const { data, error } = await supabase
+    .from('Cart')
+    .select('product_id, quantity, product_data')
+    .eq('user_id', userId);
+  if (error) { console.error('fetchUserCart error:', error); return []; }
+  return data || [];
+};
+
+export const upsertCartItem = async (
+  userId: string,
+  productId: string,
+  quantity: number,
+  productData: any
+): Promise<void> => {
+  const { error } = await supabase.from('Cart').upsert(
+    {
+      user_id: userId,
+      product_id: String(productId),
+      quantity,
+      product_data: productData,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: 'user_id,product_id' }
+  );
+  if (error) console.error('upsertCartItem error:', error);
+};
+
+export const removeCartItem = async (userId: string, productId: string): Promise<void> => {
+  const { error } = await supabase
+    .from('Cart')
+    .delete()
+    .eq('user_id', userId)
+    .eq('product_id', String(productId));
+  if (error) console.error('removeCartItem error:', error);
+};
+
+export const clearUserCart = async (userId: string): Promise<void> => {
+  const { error } = await supabase.from('Cart').delete().eq('user_id', userId);
+  if (error) console.error('clearUserCart error:', error);
+};
+
+// ===== Wishlist DB operations =====
+export const fetchUserWishlist = async (
+  userId: string
+): Promise<Array<{ product_id: string; product_data: any }>> => {
+  const { data, error } = await supabase
+    .from('Wishlist')
+    .select('product_id, product_data')
+    .eq('user_id', userId);
+  if (error) { console.error('fetchUserWishlist error:', error); return []; }
+  return data || [];
+};
+
+export const upsertWishlistItem = async (
+  userId: string,
+  productId: string,
+  productData: any
+): Promise<void> => {
+  const { error } = await supabase.from('Wishlist').upsert(
+    {
+      user_id: userId,
+      product_id: String(productId),
+      product_data: productData,
+    },
+    { onConflict: 'user_id,product_id' }
+  );
+  if (error) console.error('upsertWishlistItem error:', error);
+};
+
+export const removeWishlistItem = async (userId: string, productId: string): Promise<void> => {
+  const { error } = await supabase
+    .from('Wishlist')
+    .delete()
+    .eq('user_id', userId)
+    .eq('product_id', String(productId));
+  if (error) console.error('removeWishlistItem error:', error);
 };
