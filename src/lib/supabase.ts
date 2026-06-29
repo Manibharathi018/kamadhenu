@@ -288,6 +288,31 @@ export const deleteProductById = async (id: string): Promise<void> => {
   return deleteProduct(id);
 };
 
+export const updateProductQuantity = async (
+  productId: string,
+  quantityOrdered: number
+): Promise<void> => {
+  // Fetch current quantity first
+  const { data, error: fetchError } = await supabase
+    .from('Products')
+    .select('quantity')
+    .eq('id', productId)
+    .single();
+
+  if (fetchError) { console.error('updateProductQuantity fetch error:', fetchError); return; }
+
+  const current = data?.quantity ?? 0;
+  const newQty = Math.max(0, current - quantityOrdered);
+
+  const { error } = await supabase
+    .from('Products')
+    .update({ quantity: newQty })
+    .eq('id', productId);
+
+  if (error) console.error('updateProductQuantity update error:', error);
+};
+
+
 // ===== Cart DB operations =====
 export const fetchUserCart = async (
   userId: string

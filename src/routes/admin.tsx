@@ -32,6 +32,8 @@ function AdminDashboard() {
     quantity: 0,
     price: 0,
     mrp: 0,
+    fabric: "",
+    color: "",
     description: "",
   });
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -114,9 +116,9 @@ function AdminDashboard() {
       quantity: productForm.quantity,
       price: productForm.price,
       mrp: productForm.mrp || productForm.price,
-      fabric: "",
+      fabric: productForm.fabric,
       occasion: "",
-      color: "",
+      color: productForm.color,
       description: productForm.description,
       images: finalImages,
     };
@@ -124,7 +126,7 @@ function AdminDashboard() {
     addProduct(newProduct, {
       onSuccess: () => {
         alert("Product added successfully!");
-        setProductForm({ id: "", name: "", category: "", image: "", quantity: 0, price: 0, mrp: 0, description: "" });
+        setProductForm({ id: "", name: "", category: "", image: "", quantity: 0, price: 0, mrp: 0, fabric: "", color: "", description: "" });
         setImageFiles([]);
       },
       onError: (error) => {
@@ -405,6 +407,32 @@ function AdminDashboard() {
                       }
                       className="bg-neutral-700 border-neutral-600 text-neutral-100"
                       min={0}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-300 mb-2">
+                      Fabric
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="e.g., Pure Silk"
+                      value={productForm.fabric}
+                      onChange={(e) => setProductForm({ ...productForm, fabric: e.target.value })}
+                      className="bg-neutral-700 border-neutral-600 text-neutral-100 placeholder-neutral-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-300 mb-2">
+                      Colour
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="e.g., Maroon, Green, Blue"
+                      value={productForm.color}
+                      onChange={(e) => setProductForm({ ...productForm, color: e.target.value })}
+                      className="bg-neutral-700 border-neutral-600 text-neutral-100 placeholder-neutral-500"
                     />
                   </div>
 

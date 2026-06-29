@@ -23,7 +23,7 @@ function LoginPage() {
   // Redirect if already logged in
   useEffect(() => {
     if (!loading && user) {
-      navigate({ to: "/dashboard" });
+      navigate({ to: "/" });
     }
     if (isAdmin) {
       navigate({ to: "/admin" });
@@ -50,7 +50,7 @@ function LoginPage() {
       { email, password },
       {
         onSuccess: () => {
-          navigate({ to: "/dashboard" });
+          navigate({ to: "/" });
         },
         onError: (err) => {
           setError(err instanceof Error ? err.message : "Sign in failed");

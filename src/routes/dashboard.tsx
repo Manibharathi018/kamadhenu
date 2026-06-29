@@ -2,8 +2,9 @@ import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-r
 import { useState, useEffect } from "react";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { Package, MapPin, Heart, Settings, LogOut } from "lucide-react";
-import { products, formatINR } from "@/lib/products";
-import { useSignOut, useUpdateUserMetadata } from "@/lib/hooks";
+import { formatINR } from "@/lib/products";
+
+import { useSignOut, useUpdateUserMetadata, useUserOrders } from "@/lib/hooks";
 import { useAuth } from "@/lib/auth-context";
 import { useWishlist, wishlistStore } from "@/lib/wishlist-store";
 import { X as XIcon } from "lucide-react";
@@ -110,10 +111,46 @@ function Dashboard() {
 }
 
 function Orders() {
-  const orders = [
-    { id: "VS-10821", date: "12 Jun 2026", status: "Delivered", items: [products[0], products[2]], total: 55000 },
-    { id: "VS-10792", date: "01 May 2026", status: "Shipped", items: [products[4]], total: 22000 },
-  ];
+  const { user } = useAuth();
+  const { data: orders = [], isLoading } = useUserOrders(user?.id);
+
+  if (isLoading) {
+    return (
+      <div>
+        <h2 className="font-display text-2xl text-royal">My Orders</h2>
+        <div className="mt-10 flex flex-col items-center justify-center gap-3 text-muted-foreground">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-gold border-t-transparent" />
+          <p className="text-sm">Loading your orders…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (orders.length === 0) {
+    return (
+      <div>
+        <h2 className="font-display text-2xl text-royal">My Orders</h2>
+        <div className="mt-12 flex flex-col items-center justify-center gap-4 text-center">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gold/10">
+            <span className="text-4xl">🛍️</span>
+          </div>
+          <p className="font-display text-xl text-royal">No orders yet</p>
+          <p className="text-sm text-muted-foreground max-w-xs">Once you place an order, it will appear here.</p>
+          <a href="/shop" className="mt-2 inline-flex items-center gap-2 rounded-full bg-gold px-6 py-2.5 text-sm font-semibold uppercase tracking-widest text-foreground btn-gold-glow">
+            Shop Now
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  const statusStyle = (status: string) => {
+    if (status === 'delivered') return 'bg-green-100 text-green-700';
+    if (status === 'shipped') return 'bg-blue-100 text-blue-700';
+    if (status === 'processing') return 'bg-yellow-100 text-yellow-700';
+    return 'bg-gold/15 text-foreground';
+  };
+
   return (
     <div>
       <h2 className="font-display text-2xl text-royal">My Orders</h2>
@@ -121,18 +158,20 @@ function Orders() {
         {orders.map(o => (
           <div key={o.id} className="rounded-lg border border-border p-5">
             <div className="flex flex-wrap justify-between gap-3 border-b border-border pb-3 text-sm">
-              <div><span className="text-muted-foreground">Order</span> <span className="font-semibold">{o.id}</span></div>
-              <div className="text-muted-foreground">{o.date}</div>
-              <span className="rounded-full bg-gold/15 px-3 py-0.5 text-xs font-semibold text-foreground">{o.status}</span>
+              <div><span className="text-muted-foreground">Order</span> <span className="font-semibold font-mono text-xs">{o.id.split('-')[0].toUpperCase()}-{o.id.slice(-6).toUpperCase()}</span></div>
+              <div className="text-muted-foreground">{new Date(o.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+              <span className={`rounded-full px-3 py-0.5 text-xs font-semibold capitalize ${statusStyle(o.status)}`}>{o.status}</span>
             </div>
-            <div className="mt-4 flex flex-wrap items-center gap-4">
-              {o.items.map(p => (
-                <div key={p.id} className="flex items-center gap-3">
-                  <img src={p.image} alt="" className="h-16 w-14 rounded object-cover" />
-                  <p className="text-sm">{p.name}</p>
+            <div className="mt-4 space-y-2">
+              {o.items.map((item, idx) => (
+                <div key={idx} className="flex items-center justify-between gap-3 text-sm">
+                  <p className="line-clamp-1 flex-1">{item.name} <span className="text-muted-foreground">x{item.quantity}</span></p>
+                  <span className="font-medium text-royal">{formatINR(item.price * item.quantity)}</span>
                 </div>
               ))}
-              <div className="ml-auto font-display text-lg text-royal">{formatINR(o.total)}</div>
+            </div>
+            <div className="mt-4 flex justify-end border-t border-border pt-3">
+              <span className="font-display text-lg text-royal">{formatINR(o.total)}</span>
             </div>
           </div>
         ))}

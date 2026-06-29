@@ -10,6 +10,7 @@ import {
   signOut,
   getCurrentUser,
   updateUserMetadata,
+  fetchUserOrders,
   type Product,
 } from './supabase';
 
@@ -120,5 +121,14 @@ export const useCurrentUser = () => {
     queryKey: ['user'],
     queryFn: getCurrentUser,
     staleTime: Infinity,
+  });
+};
+
+export const useUserOrders = (userId: string | undefined) => {
+  return useQuery({
+    queryKey: ['orders', userId],
+    queryFn: () => fetchUserOrders(userId!),
+    enabled: !!userId,
+    staleTime: 1000 * 30, // 30 seconds
   });
 };

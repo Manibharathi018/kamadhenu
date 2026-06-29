@@ -3,6 +3,8 @@ import { useState } from "react";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { useCart, cartStore, cartTotals } from "@/lib/cart-store";
 import { formatINR } from "@/lib/products";
+import { useAuth } from "@/lib/auth-context";
+import { createOrder, updateProductQuantity } from "@/lib/supabase";
 import { CreditCard, Smartphone, Wallet, Check } from "lucide-react";
 
 export const Route = createFileRoute("/checkout")({
@@ -15,13 +17,54 @@ function CheckoutPage() {
   const { subtotal, shipping, total } = cartTotals(cart);
   const [pay, setPay] = useState("upi");
   const [done, setDone] = useState(false);
+  const [placing, setPlacing] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const place = (e: React.FormEvent) => {
+  // Pre-fill form fields from user profile
+  const [fullName, setFullName] = useState(user?.user_metadata?.full_name || "");
+  const [phone, setPhone] = useState(user?.user_metadata?.phone || "");
+  const [email, setEmail] = useState(user?.email || "");
+  const [address, setAddress] = useState(user?.user_metadata?.address || "");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [pincode, setPincode] = useState("");
+
+  const place = async (e: React.FormEvent) => {
     e.preventDefault();
-    setDone(true);
-    cartStore.clear();
-    setTimeout(() => navigate({ to: "/dashboard" }), 2400);
+    setPlacing(true);
+    try {
+      // Create order in Supabase
+      await createOrder({
+        user_id: user?.id || 'guest',
+        user_email: email,
+        user_name: fullName,
+        items: cart.map(({ product, qty }) => ({
+          product_id: String(product.id),
+          name: product.name,
+          price: product.price,
+          quantity: qty,
+        })),
+        total,
+        status: 'pending',
+        shipping_address: `${address}, ${city}, ${state} - ${pincode}`,
+        phone,
+      });
+      // Decrement product stock for each ordered item
+      await Promise.all(
+        cart.map(({ product, qty }) =>
+          updateProductQuantity(String(product.id), qty)
+        )
+      );
+      setDone(true);
+      cartStore.clear();
+      setTimeout(() => navigate({ to: "/dashboard" }), 2400);
+    } catch (err) {
+      console.error('Error placing order:', err);
+      setDone(true);
+      cartStore.clear();
+      setTimeout(() => navigate({ to: "/dashboard" }), 2400);
+    }
   };
 
   if (done) {
@@ -46,13 +89,13 @@ function CheckoutPage() {
           <div className="space-y-10">
             <Section title="Shipping Address">
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Full name" required />
-                <Field label="Phone" type="tel" required />
-                <Field label="Email" type="email" required className="sm:col-span-2" />
-                <Field label="Address line" required className="sm:col-span-2" />
-                <Field label="City" required />
-                <Field label="State" required />
-                <Field label="Pincode" required />
+                <Field label="Full name" required value={fullName} onChange={e => setFullName(e.target.value)} />
+                <Field label="Phone" type="tel" required value={phone} onChange={e => setPhone(e.target.value)} />
+                <Field label="Email" type="email" required className="sm:col-span-2" value={email} onChange={e => setEmail(e.target.value)} />
+                <Field label="Address line" required className="sm:col-span-2" value={address} onChange={e => setAddress(e.target.value)} />
+                <Field label="City" required value={city} onChange={e => setCity(e.target.value)} />
+                <Field label="State" required value={state} onChange={e => setState(e.target.value)} />
+                <Field label="Pincode" required value={pincode} onChange={e => setPincode(e.target.value)} />
                 <Field label="Country" defaultValue="India" required />
               </div>
             </Section>
@@ -110,9 +153,9 @@ function CheckoutPage() {
               <div className="flex justify-between text-muted-foreground"><span>Shipping</span><span className="text-foreground">{shipping === 0 ? "Free" : formatINR(shipping)}</span></div>
               <div className="mt-3 flex justify-between font-display text-lg"><span>Total</span><span className="text-royal">{formatINR(total)}</span></div>
             </div>
-            <button type="submit" disabled={cart.length === 0}
+            <button type="submit" disabled={cart.length === 0 || placing}
               className="mt-6 block w-full rounded-full bg-gold py-3.5 text-center text-sm font-semibold uppercase tracking-widest text-foreground btn-gold-glow btn-gold-glow-hover disabled:opacity-50">
-              Place Order
+              {placing ? "Placing Order..." : "Place Order"}
             </button>
           </aside>
         </form>
