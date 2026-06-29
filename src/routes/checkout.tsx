@@ -5,7 +5,7 @@ import { useCart, cartStore, cartTotals } from "@/lib/cart-store";
 import { formatINR } from "@/lib/products";
 import { useAuth } from "@/lib/auth-context";
 import { createOrder, updateProductQuantity } from "@/lib/supabase";
-import { CreditCard, Smartphone, Wallet, Check } from "lucide-react";
+import { CreditCard, Smartphone, Wallet, Check, AlertCircle } from "lucide-react";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [{ title: "Checkout — Kamadhenu Silks" }] }),
@@ -18,6 +18,7 @@ function CheckoutPage() {
   const [pay, setPay] = useState("upi");
   const [done, setDone] = useState(false);
   const [placing, setPlacing] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -32,38 +33,48 @@ function CheckoutPage() {
 
   const place = async (e: React.FormEvent) => {
     e.preventDefault();
+    setOrderError(null);
     setPlacing(true);
+
+    // Snapshot cart before clearing
+    const cartSnapshot = [...cart];
+
     try {
-      // Create order in Supabase
+      // 1. Create order in Supabase
       await createOrder({
-        user_id: user?.id || 'guest',
+        user_id: user?.id || "guest",
         user_email: email,
         user_name: fullName,
-        items: cart.map(({ product, qty }) => ({
+        items: cartSnapshot.map(({ product, qty }) => ({
           product_id: String(product.id),
           name: product.name,
           price: product.price,
           quantity: qty,
         })),
         total,
-        status: 'pending',
+        status: "pending",
         shipping_address: `${address}, ${city}, ${state} - ${pincode}`,
         phone,
       });
-      // Decrement product stock for each ordered item
+
+      // 2. Decrement product stock for each item
       await Promise.all(
-        cart.map(({ product, qty }) =>
+        cartSnapshot.map(({ product, qty }) =>
           updateProductQuantity(String(product.id), qty)
         )
       );
-      setDone(true);
+
+      // 3. Clear cart and show success
       cartStore.clear();
-      setTimeout(() => navigate({ to: "/dashboard" }), 2400);
-    } catch (err) {
-      console.error('Error placing order:', err);
       setDone(true);
-      cartStore.clear();
       setTimeout(() => navigate({ to: "/dashboard" }), 2400);
+    } catch (err: any) {
+      console.error("Error placing order:", err);
+      const msg =
+        err?.message ||
+        (typeof err === "string" ? err : "Failed to place order. Please try again.");
+      setOrderError(msg);
+      setPlacing(false);
     }
   };
 
@@ -72,9 +83,13 @@ function CheckoutPage() {
       <div className="min-h-screen bg-ivory">
         <SiteHeader />
         <div className="mx-auto max-w-xl px-6 py-32 text-center">
-          <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-gold text-foreground"><Check className="h-10 w-10" /></div>
-          <h1 className="mt-6 font-display text-3xl text-royal">Order Placed</h1>
-          <p className="mt-3 text-muted-foreground">Your heirloom is on its way. A confirmation has been sent to your inbox.</p>
+          <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-gold text-foreground">
+            <Check className="h-10 w-10" />
+          </div>
+          <h1 className="mt-6 font-display text-3xl text-royal">Order Placed!</h1>
+          <p className="mt-3 text-muted-foreground">
+            Your heirloom is on its way. Redirecting to your orders…
+          </p>
         </div>
       </div>
     );
@@ -85,6 +100,18 @@ function CheckoutPage() {
       <SiteHeader />
       <div className="mx-auto max-w-7xl px-6 py-12">
         <h1 className="font-display text-4xl text-royal">Checkout</h1>
+
+        {/* Error Banner */}
+        {orderError && (
+          <div className="mt-6 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <div>
+              <p className="font-semibold">Order failed</p>
+              <p className="mt-0.5 text-xs text-red-600">{orderError}</p>
+            </div>
+          </div>
+        )}
+
         <form onSubmit={place} className="mt-10 grid gap-10 lg:grid-cols-[1fr_400px]">
           <div className="space-y-10">
             <Section title="Shipping Address">
@@ -155,7 +182,7 @@ function CheckoutPage() {
             </div>
             <button type="submit" disabled={cart.length === 0 || placing}
               className="mt-6 block w-full rounded-full bg-gold py-3.5 text-center text-sm font-semibold uppercase tracking-widest text-foreground btn-gold-glow btn-gold-glow-hover disabled:opacity-50">
-              {placing ? "Placing Order..." : "Place Order"}
+              {placing ? "Placing Order…" : "Place Order"}
             </button>
           </aside>
         </form>
