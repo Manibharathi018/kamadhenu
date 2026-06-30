@@ -25,7 +25,25 @@ export const Route = createFileRoute("/contact")({
   component: ContactPage,
 });
 
+import { useState } from "react";
+
 function ContactPage() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleWhatsAppSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim() || !message.trim()) return;
+
+    const whatsappNumber = "917810065250";
+    const text = `Name: ${name}\nEmail: ${email}\nMessage: ${message}`;
+    const encodedText = encodeURIComponent(text);
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedText}`;
+
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <div className="min-h-screen bg-ivory">
       <SiteHeader />
@@ -34,14 +52,20 @@ function ContactPage() {
         <h1 className="mt-2 font-display text-4xl text-royal">We are here for you.</h1>
 
         <div className="mt-12 grid gap-10 md:grid-cols-[1fr_320px]">
-          <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-            <Field label="Name" />
-            <Field label="Email" type="email" />
+          <form className="space-y-4" onSubmit={handleWhatsAppSubmit}>
+            <Field label="Name" value={name} onChange={(e) => setName(e.target.value)} required />
+            <Field label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
             <label className="block">
               <span className="text-xs uppercase tracking-widest text-muted-foreground">Message</span>
-              <textarea rows={6} className="mt-1.5 w-full rounded-md border border-border bg-card px-3 py-2.5 text-sm outline-none focus:border-gold" />
+              <textarea 
+                rows={6} 
+                required
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                className="mt-1.5 w-full rounded-md border border-border bg-card px-3 py-2.5 text-sm outline-none focus:border-gold" 
+              />
             </label>
-            <button className="rounded-full bg-gold px-7 py-3 text-sm font-semibold uppercase tracking-widest text-foreground btn-gold-glow btn-gold-glow-hover">Send Message</button>
+            <button type="submit" className="rounded-full bg-gold px-7 py-3 text-sm font-semibold uppercase tracking-widest text-foreground btn-gold-glow btn-gold-glow-hover">Send Message</button>
           </form>
           <aside className="space-y-5 rounded-lg border border-border bg-card p-6">
             <div className="flex gap-3">
@@ -59,7 +83,7 @@ function ContactPage() {
                 </a>
               </div>
             </div>
-            <Item icon={Phone} title="Call / WhatsApp" body="+91 98765 43210" />
+            <Item icon={Phone} title="Call / WhatsApp" body="+91 78100 65250" />
             <Item icon={Mail} title="Email" body="care@kamadhenusilks.com" />
             <div className="flex gap-3">
               <Instagram className="h-5 w-5 text-gold shrink-0 mt-0.5" />
