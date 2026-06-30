@@ -7,7 +7,7 @@ import { cartStore } from "@/lib/cart-store";
 import { wishlistStore, useWishlist } from "@/lib/wishlist-store";
 import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
-import { Minus, Plus, ShieldCheck, Truck, RefreshCcw, Heart } from "lucide-react";
+import { Minus, Plus, ShieldCheck, Truck, RefreshCcw, Heart, Video } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
 
 export const Route = createFileRoute("/product/$id")({
@@ -99,6 +99,13 @@ function ProductPage() {
     }, "add to wishlist");
   };
 
+  const handleVideoCall = () => {
+    const whatsappNumber = "917810065250";
+    const text = `Hi, I would like to request a video call for product:\n\n*${product.name}*\n(Product ID: ${product.id})`;
+    const encodedText = encodeURIComponent(text);
+    window.open(`https://wa.me/${whatsappNumber}?text=${encodedText}`, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <div className="min-h-screen bg-ivory">
       <SiteHeader />
@@ -161,11 +168,11 @@ function ProductPage() {
                 <span className="text-xs font-mono text-muted-foreground bg-white/50 px-2 py-0.5 rounded border border-border/50">ID: {product.id}</span>
               </div>
             </div>
-            <h1 className="mt-2 font-display text-3xl md:text-4xl text-royal">{product.name}</h1>
+            <h1 className="mt-2 font-display text-2xl md:text-3xl text-royal">{product.name}</h1>
 
             {/* Price */}
-            <div className="mt-6 flex items-baseline gap-3 flex-wrap">
-              <span className="font-display text-3xl text-royal">{formatINR(product.price)}</span>
+            <div className="mt-4 flex items-baseline gap-3 flex-wrap">
+              <span className="font-display text-2xl text-royal">{formatINR(product.price)}</span>
               {product.mrp > product.price && (
                 <>
                   <span className="text-sm text-muted-foreground line-through">{formatINR(product.mrp)}</span>
@@ -176,10 +183,10 @@ function ProductPage() {
               )}
             </div>
 
-            <p className="mt-6 leading-relaxed text-muted-foreground">{product.description}</p>
+            <p className="mt-4 leading-relaxed text-muted-foreground text-sm">{product.description}</p>
 
             {/* Specs table — only Product ID, Fabric, Colour */}
-            <dl className="mt-6 grid grid-cols-2 gap-y-3 border-y border-border py-5 text-sm">
+            <dl className="mt-4 grid grid-cols-2 gap-y-2 border-y border-border py-3 text-sm">
               <dt className="text-muted-foreground">Product ID</dt><dd className="font-medium font-mono">{product.id}</dd>
               {product.fabric && (
                 <><dt className="text-muted-foreground">Fabric</dt><dd className="font-medium">{product.fabric}</dd></>
@@ -206,7 +213,7 @@ function ProductPage() {
 
             {/* Quantity selector */}
             {!isSoldOut && (
-              <div className="mt-6 flex items-center gap-4">
+              <div className="mt-4 flex items-center gap-4">
                 <div className="flex items-center rounded-full border border-border">
                   <button
                     onClick={() => setQty(q => Math.max(1, q - 1))}
@@ -231,24 +238,34 @@ function ProductPage() {
             )}
 
             {/* Action buttons */}
-            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+            <div className="mt-5 flex flex-col gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={handleAddToCart}
+                  disabled={isSoldOut}
+                  className="flex-1 rounded-full border-2 border-royal py-3 text-sm font-semibold uppercase tracking-widest text-royal hover:bg-royal hover:text-royal-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Add to Cart
+                </button>
+                <button
+                  onClick={handleBuyNow}
+                  disabled={isSoldOut}
+                  className={`flex-1 rounded-full py-3 text-sm font-semibold uppercase tracking-widest transition-all ${
+                    isSoldOut
+                      ? "bg-muted text-muted-foreground cursor-not-allowed opacity-50"
+                      : "bg-gold text-foreground btn-gold-glow btn-gold-glow-hover"
+                  }`}
+                >
+                  {isSoldOut ? "Sold Out" : "Buy Now"}
+                </button>
+              </div>
+              
               <button
-                onClick={handleAddToCart}
-                disabled={isSoldOut}
-                className="flex-1 rounded-full border-2 border-royal py-3.5 text-sm font-semibold uppercase tracking-widest text-royal hover:bg-royal hover:text-royal-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                onClick={handleVideoCall}
+                className="w-full flex items-center justify-center gap-2 rounded-full border border-green-600/30 bg-green-50 text-green-700 py-3 text-sm font-semibold uppercase tracking-widest hover:bg-green-100 hover:border-green-600/50 transition-colors"
               >
-                Add to Cart
-              </button>
-              <button
-                onClick={handleBuyNow}
-                disabled={isSoldOut}
-                className={`flex-1 rounded-full py-3.5 text-sm font-semibold uppercase tracking-widest transition-all ${
-                  isSoldOut
-                    ? "bg-muted text-muted-foreground cursor-not-allowed opacity-50"
-                    : "bg-gold text-foreground btn-gold-glow btn-gold-glow-hover"
-                }`}
-              >
-                {isSoldOut ? "Sold Out" : "Buy Now"}
+                <Video className="h-4 w-4" />
+                Request Video Call
               </button>
             </div>
 
