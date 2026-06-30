@@ -3,6 +3,7 @@ import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { useCart, cartStore, cartTotals } from "@/lib/cart-store";
 import { formatINR } from "@/lib/products";
 import { Minus, Plus, X, ShoppingBag } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({ meta: [{ title: "Your Cart — Kamadhenu Silks" }] }),
@@ -47,7 +48,7 @@ function CartPage() {
                     </div>
                   </div>
                   <div className="flex flex-col items-end justify-between">
-                    <button onClick={() => cartStore.remove(product.id)} className="text-muted-foreground hover:text-maroon" aria-label="Remove"><X className="h-5 w-5" /></button>
+                    <button onClick={() => { cartStore.remove(product.id); toast.info("Removed from cart", { description: product.name }); }} className="text-muted-foreground hover:text-maroon" aria-label="Remove"><X className="h-5 w-5" /></button>
                     <p className="font-semibold">{formatINR(product.price * qty)}</p>
                   </div>
                 </li>

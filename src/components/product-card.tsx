@@ -4,6 +4,7 @@ import type { Product } from "@/lib/products";
 import { formatINR } from "@/lib/products";
 import { wishlistStore, useWishlist } from "@/lib/wishlist-store";
 import { useAuth } from "@/lib/auth-context";
+import { toast } from "sonner";
 
 export function ProductCard({ product }: { product: Product }) {
   const wishlist = useWishlist();
@@ -15,10 +16,19 @@ export function ProductCard({ product }: { product: Product }) {
     e.preventDefault();
     e.stopPropagation();
     if (!user) {
-      navigate({ to: "/login" });
+      toast.error("Please sign in to add to wishlist", {
+        description: "Create a free account or sign in to save your favourite sarees.",
+        action: { label: "Sign In", onClick: () => navigate({ to: "/login" }) },
+      });
       return;
     }
-    wishlistStore.toggle(product);
+    if (isWishlisted) {
+      wishlistStore.toggle(product);
+      toast.success("Removed from wishlist", { description: product.name });
+    } else {
+      wishlistStore.toggle(product);
+      toast.success("Added to wishlist ❤️", { description: product.name });
+    }
   };
 
   return (

@@ -6,6 +6,7 @@ import { fetchProduct, fetchProducts } from "@/lib/supabase";
 import { cartStore } from "@/lib/cart-store";
 import { wishlistStore, useWishlist } from "@/lib/wishlist-store";
 import { useAuth } from "@/lib/auth-context";
+import { toast } from "sonner";
 import { Minus, Plus, ShieldCheck, Truck, RefreshCcw, Heart } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
 
@@ -56,9 +57,12 @@ function ProductPage() {
     setQty(1);
   }, [product.image]);
 
-  const requireAuth = (action: () => void) => {
+  const requireAuth = (action: () => void, actionName: string) => {
     if (!user) {
-      navigate({ to: "/login" });
+      toast.error(`Please sign in to ${actionName}`, {
+        description: "Create a free account or sign in to continue.",
+        action: { label: "Sign In", onClick: () => navigate({ to: "/login" }) },
+      });
       return;
     }
     action();
@@ -68,21 +72,31 @@ function ProductPage() {
     requireAuth(() => {
       if (isSoldOut) return;
       cartStore.add(product as any, qty);
-    });
+      toast.success(`Added to cart 🛍️`, {
+        description: `${product.name} × ${qty}`,
+      });
+    }, "add to cart");
   };
 
   const handleBuyNow = () => {
     requireAuth(() => {
       if (isSoldOut) return;
       cartStore.add(product as any, qty);
+      toast.success("Proceeding to checkout...", { description: product.name });
       navigate({ to: "/checkout" });
-    });
+    }, "purchase");
   };
 
   const handleWishlist = () => {
     requireAuth(() => {
-      wishlistStore.toggle(product as any);
-    });
+      if (isWishlisted) {
+        wishlistStore.toggle(product as any);
+        toast.success("Removed from wishlist", { description: product.name });
+      } else {
+        wishlistStore.toggle(product as any);
+        toast.success("Added to wishlist ❤️", { description: product.name });
+      }
+    }, "add to wishlist");
   };
 
   return (

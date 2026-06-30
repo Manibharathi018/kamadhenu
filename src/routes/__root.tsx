@@ -8,6 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -124,6 +125,19 @@ function RootComponent() {
           <UserDataProvider>
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
             <Outlet />
+            <Toaster
+              position="bottom-right"
+              toastOptions={{
+                style: {
+                  background: "#2d0a12",
+                  color: "#f5e6c8",
+                  border: "1px solid rgba(196,160,80,0.35)",
+                  fontFamily: "Poppins, sans-serif",
+                  fontSize: "14px",
+                },
+              }}
+              richColors
+            />
           </UserDataProvider>
         </AuthProvider>
       </AdminProvider>
