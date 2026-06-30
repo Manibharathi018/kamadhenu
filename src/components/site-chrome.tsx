@@ -114,7 +114,7 @@ export function SiteHeader() {
               {suggestions.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-md shadow-xl border border-border overflow-hidden z-50">
                   {suggestions.map(p => (
-                    <Link key={p.id} to={`/product/${p.id}`} 
+                    <Link key={p.id} to="/product/$id" params={{ id: String(p.id) }}
                       onClick={() => { setIsSearchOpen(false); setSearchQuery(""); }}
                       className="flex items-center gap-3 p-3 hover:bg-muted transition-colors border-b last:border-0 border-border">
                       <img src={p.image} className="w-10 h-12 object-cover rounded shadow-sm" alt={p.name} />
@@ -168,14 +168,50 @@ export function SiteFooter() {
           </div>
         </div>
         {[
-          { title: "Shop", links: ["Wedding", "Festive", "New Arrivals", "Bestsellers"] },
-          { title: "Care", links: ["Contact", "Shipping", "Returns", "Silk Care"] },
-          { title: "About", links: ["Our Heritage", "Weavers", "Press", "Journal"] },
+          {
+            title: "Shop",
+            links: [
+              { label: "Wedding", to: "/shop", search: { category: "Wedding" } },
+              { label: "Festive", to: "/shop", search: { category: "Festive" } },
+              { label: "New Arrivals", to: "/shop", search: { sort: "new" } },
+              { label: "Bestsellers", to: "/shop" },
+            ]
+          },
+          {
+            title: "Care",
+            links: [
+              { label: "Contact", to: "/contact" },
+              { label: "Shipping", to: "#" },
+              { label: "Returns", to: "#" },
+              { label: "Silk Care", to: "#" },
+            ]
+          },
+          {
+            title: "About",
+            links: [
+              { label: "Our Heritage", to: "/about" },
+              { label: "Weavers", to: "/about" },
+              { label: "Press", to: "#" },
+              { label: "Journal", to: "#" },
+            ]
+          },
         ].map(col => (
           <div key={col.title}>
             <h4 className="text-gradient-gold text-sm font-semibold tracking-widest uppercase">{col.title}</h4>
             <ul className="mt-4 space-y-2 text-sm text-royal-foreground/80">
-              {col.links.map(l => <li key={l}><a href="#" className="hover:text-gold transition-colors">{l}</a></li>)}
+              {col.links.map(link => (
+                <li key={link.label}>
+                  {link.to === "#" ? (
+                    <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-gold transition-colors opacity-60">
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link to={link.to} search={link.search as any} className="hover:text-gold transition-colors">
+                      {link.label}
+                    </Link>
+                  )}
+                </li>
+              ))}
             </ul>
           </div>
         ))}

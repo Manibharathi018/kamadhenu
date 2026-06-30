@@ -1,14 +1,16 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { ProductCard } from "@/components/product-card";
 import { useProducts } from "@/lib/hooks";
 import { SlidersHorizontal } from "lucide-react";
 
 export const Route = createFileRoute("/shop")({
-  validateSearch: (search: Record<string, unknown>) => {
+  validateSearch: (search: Record<string, unknown>): { q?: string; category?: string; sort?: string } => {
     return {
       q: (search.q as string) || undefined,
+      category: (search.category as string) || undefined,
+      sort: (search.sort as string) || undefined,
     }
   },
   head: () => ({ meta: [{ title: "Shop Sarees — Kamadhenu Silks" }, { name: "description", content: "Browse our handwoven Kanchipuram silk saree collection." }] }),
@@ -16,22 +18,60 @@ export const Route = createFileRoute("/shop")({
 });
 
 function ShopPage() {
-  const { q } = Route.useSearch();
-  const [sort, setSort] = useState("new");
-  const [occ, setOcc] = useState<string>("all");
+  const { q, category, sort = "new" } = Route.useSearch();
+  const navigate = useNavigate();
   const { data: products = [], isLoading, error } = useProducts();
+
+  const handleCategoryClick = (cVal: string) => {
+    navigate({
+      to: "/shop",
+      search: (prev) => ({
+        ...prev,
+        category: cVal === "all" ? undefined : cVal,
+      }),
+    });
+  };
+
+  const handleSortChange = (sortVal: string) => {
+    navigate({
+      to: "/shop",
+      search: (prev) => ({
+        ...prev,
+        sort: sortVal === "new" ? undefined : sortVal,
+      }),
+    });
+  };
 
   const list = useMemo(() => {
     let l = [...products];
     if (q) {
       const lowerQ = q.toLowerCase();
-      l = l.filter(p => p.name.toLowerCase().includes(lowerQ) || p.description.toLowerCase().includes(lowerQ) || p.category.toLowerCase().includes(lowerQ));
+      l = l.filter(p => p.name.toLowerCase().includes(lowerQ) || p.description.toLowerCase().includes(lowerQ) || (p.category && p.category.toLowerCase().includes(lowerQ)));
     }
-    if (occ !== "all") l = l.filter(p => p.occasion === occ);
-    if (sort === "low") l.sort((a, b) => a.price - b.price);
-    if (sort === "high") l.sort((a, b) => b.price - a.price);
+    
+    if (category && category !== "all") {
+      const lowerCat = category.toLowerCase();
+      l = l.filter(p => 
+        (p.category && p.category.toLowerCase() === lowerCat) || 
+        (p.occasion && p.occasion.toLowerCase() === lowerCat)
+      );
+    }
+    
+    if (sort === "low") {
+      l.sort((a, b) => a.price - b.price);
+    } else if (sort === "high") {
+      l.sort((a, b) => b.price - a.price);
+    } else if (sort === "new") {
+      l.sort((a, b) => {
+        const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+        if (dateA && dateB) return dateB - dateA;
+        return String(b.id).localeCompare(String(a.id));
+      });
+    }
+    
     return l;
-  }, [sort, occ, products, q]);
+  }, [sort, category, products, q]);
 
   if (error) {
     return (
@@ -60,14 +100,25 @@ function ShopPage() {
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <SlidersHorizontal className="h-4 w-4" /> {isLoading ? "Loading..." : `${list.length} pieces`}
           </div>
-          <div className="flex flex-wrap gap-2">
-            {["all", "Wedding", "Festive", "Reception"].map(o => (
-              <button key={o} onClick={() => setOcc(o)}
-                className={`rounded-full border px-4 py-1.5 text-xs uppercase tracking-wider transition-colors ${occ === o ? "border-royal bg-royal text-royal-foreground" : "border-border hover:border-gold"}`}>
-                {o === "all" ? "All occasions" : o}
+          <div className="flex flex-wrap gap-2 items-center">
+            {["all", "Wedding", "Festive", "Traditional", "Reception"].map(o => {
+              const isActive = (category || "all").toLowerCase() === o.toLowerCase();
+              return (
+                <button key={o} onClick={() => handleCategoryClick(o)}
+                  className={`rounded-full border px-4 py-1.5 text-xs uppercase tracking-wider transition-colors ${isActive ? "border-royal bg-royal text-royal-foreground" : "border-border hover:border-gold"}`}>
+                  {o === "all" ? "All" : o}
+                </button>
+              );
+            })}
+            
+            {category && !["all", "wedding", "festive", "traditional", "reception"].includes(category.toLowerCase()) && (
+              <button onClick={() => handleCategoryClick("all")}
+                className="rounded-full border border-gold bg-gold/15 px-4 py-1.5 text-xs uppercase tracking-wider text-royal hover:bg-gold/25 transition-colors flex items-center gap-1.5">
+                Category: {category} <span className="font-bold text-xs">×</span>
               </button>
-            ))}
-            <select value={sort} onChange={e => setSort(e.target.value)}
+            )}
+
+            <select value={sort} onChange={e => handleSortChange(e.target.value)}
               className="rounded-full border border-border bg-card px-4 py-1.5 text-xs uppercase tracking-wider focus:border-gold outline-none">
               <option value="new">New arrivals</option>
               <option value="low">Price: low to high</option>

@@ -36,7 +36,7 @@ export const useCreateProduct = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (product: Omit<Product, 'id' | 'created_at' | 'updated_at'> & { id?: string | number }) =>
+    mutationFn: (product: Omit<Product, 'id' | 'created_at' | 'updated_at'> & { id?: string }) =>
       createProduct(product),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });

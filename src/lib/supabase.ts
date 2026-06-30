@@ -10,7 +10,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export type Product = {
-  id: string | number;
+  id: string;
   name: string;
   price: number;
   mrp: number;
@@ -76,7 +76,7 @@ export const fetchProduct = async (id: string): Promise<Product | null> => {
   return normalizeProduct(data);
 };
 
-export const createProduct = async (product: Omit<Product, 'id' | 'created_at' | 'updated_at'> & { id?: string | number }): Promise<Product> => {
+export const createProduct = async (product: Omit<Product, 'id' | 'created_at' | 'updated_at'> & { id?: string }): Promise<Product> => {
   // Map image -> image_url for DB storage
   const { image, ...rest } = product as any;
   const dbRow = { ...rest, image_url: image };

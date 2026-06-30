@@ -11,7 +11,7 @@ import { X as XIcon } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({ meta: [{ title: "My Account — Kamadhenu Silks" }] }),
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (search: Record<string, unknown>): { tab?: string } => ({
     tab: (search.tab as string) || "orders",
   }),
   component: Dashboard,
@@ -41,7 +41,7 @@ function Dashboard() {
   }, [user, loading, navigate]);
 
   const handleLogout = () => {
-    signOut({}, {
+    signOut(undefined, {
       onSuccess: () => {
         navigate({ to: "/" });
       },

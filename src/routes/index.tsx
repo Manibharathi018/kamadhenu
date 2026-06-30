@@ -43,10 +43,10 @@ function HomePage() {
 
   const categories = ["Kanchipuram", "Arani", "Sungudi", "Chettinad", "Tussar", "Paithani", "Wedding"];
   const collections = [
-    { title: "Wedding", tag: "Bridal heirloom", img: products[5].image },
-    { title: "Festive", tag: "Celebrations", img: products[1].image },
-    { title: "Traditional", tag: "Timeless weaves", img: products[0].image },
-    { title: "New Arrivals", tag: "Just in", img: products[4].image },
+    { title: "Wedding", tag: "Bridal heirloom", img: products[5].image, search: { category: "Wedding" } },
+    { title: "Festive", tag: "Celebrations", img: products[1].image, search: { category: "Festive" } },
+    { title: "Traditional", tag: "Timeless weaves", img: products[0].image, search: { category: "Traditional" } },
+    { title: "New Arrivals", tag: "Just in", img: products[4].image, search: { sort: "new" } },
   ];
 
   return (
@@ -84,33 +84,32 @@ function HomePage() {
             className="relative mx-auto w-full max-w-md">
             <div className="absolute -inset-4 rounded-2xl bg-gradient-to-br from-gold/40 via-transparent to-transparent blur-2xl" />
             <div className="relative overflow-hidden rounded-2xl border border-gold/30 shadow-luxe h-[520px] md:h-[640px] w-full group">
-              <div 
+              <div
                 className="flex h-full w-full transition-transform duration-1000 ease-in-out"
                 style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
               >
                 {heroImages.map((src, idx) => (
-                  <img 
-                    key={idx} 
-                    src={src} 
-                    alt={`Bride in royal purple Kanchipuram silk saree ${idx + 1}`} 
-                    width={1080} 
-                    height={1600} 
-                    className="h-full w-full flex-shrink-0 object-cover" 
+                  <img
+                    key={idx}
+                    src={src}
+                    alt={`Bride in royal purple Kanchipuram silk saree ${idx + 1}`}
+                    width={1080}
+                    height={1600}
+                    className="h-full w-full flex-shrink-0 object-cover"
                   />
                 ))}
               </div>
-              
+
               {/* Dots Navigation */}
               <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-2.5 z-10">
                 {heroImages.map((_, idx) => (
                   <button
                     key={idx}
                     onClick={() => setCurrentImageIndex(idx)}
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      idx === currentImageIndex 
-                        ? "w-8 bg-gold shadow-sm" 
-                        : "w-2 bg-white/60 hover:bg-white"
-                    }`}
+                    className={`h-2 rounded-full transition-all duration-300 ${idx === currentImageIndex
+                      ? "w-8 bg-gold shadow-sm"
+                      : "w-2 bg-white/60 hover:bg-white"
+                      }`}
                     aria-label={`Go to slide ${idx + 1}`}
                   />
                 ))}
@@ -144,18 +143,20 @@ function HomePage() {
         <SectionHeading kicker="Shop by Weave" title="Our Categories" />
         <div className="mt-6 flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {categories.map((c, i) => (
-            <motion.div key={c} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-              transition={{ delay: i * 0.05, duration: 0.5 }}
-              className="snap-start shrink-0 text-center cursor-pointer group">
-              <div className="relative mx-auto h-28 w-28 md:h-32 md:w-32">
-                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-gold/60 to-royal/60 p-[2px] transition-transform group-hover:scale-105">
-                  <div className="h-full w-full overflow-hidden rounded-full bg-ivory">
-                    <img src={products[i % products.length].image} alt={c} className="h-full w-full object-cover" loading="lazy" />
+            <Link key={c} to="/shop" search={{ category: c }}
+              className="snap-start shrink-0 text-center cursor-pointer group block">
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                transition={{ delay: i * 0.05, duration: 0.5 }}>
+                <div className="relative mx-auto h-28 w-28 md:h-32 md:w-32">
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-gold/60 to-royal/60 p-[2px] transition-transform group-hover:scale-105">
+                    <div className="h-full w-full overflow-hidden rounded-full bg-ivory">
+                      <img src={products[i % products.length].image} alt={c} className="h-full w-full object-cover" loading="lazy" />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <p className="mt-3 font-display text-sm text-foreground">{c}</p>
-            </motion.div>
+                <p className="mt-3 font-display text-sm text-foreground">{c}</p>
+              </motion.div>
+            </Link>
           ))}
         </div>
       </section>
@@ -165,19 +166,22 @@ function HomePage() {
         <SectionHeading kicker="Curated For You" title="Our Collections" />
         <div className="mt-6 flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {collections.map((col, i) => (
-            <motion.div key={col.title} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-              transition={{ delay: i * 0.08, duration: 0.6 }}
-              className="snap-start shrink-0 group relative aspect-[2/2.6] w-64 overflow-hidden rounded-lg cursor-pointer">
-              <img src={col.img} alt={col.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
-              <div className="absolute inset-0 bg-gradient-to-t from-royal via-royal/40 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-4 text-royal-foreground">
-                <p className="text-[9px] uppercase tracking-[0.2em] text-gradient-gold">{col.tag}</p>
-                <h3 className="mt-1 font-display text-lg">{col.title}</h3>
-                <span className="mt-2 inline-flex items-center gap-1 text-xs text-gold opacity-0 transition-opacity group-hover:opacity-100">
-                  Shop now <ArrowRight className="h-3 w-3" />
-                </span>
-              </div>
-            </motion.div>
+            <Link key={col.title} to="/shop" search={col.search}
+              className="snap-start shrink-0 group relative aspect-[2/2.6] w-64 overflow-hidden rounded-lg cursor-pointer block">
+              <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                transition={{ delay: i * 0.08, duration: 0.6 }}
+                className="h-full w-full relative">
+                <img src={col.img} alt={col.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                <div className="absolute inset-0 bg-gradient-to-t from-royal via-royal/40 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-4 text-royal-foreground">
+                  <p className="text-[9px] uppercase tracking-[0.2em] text-gradient-gold">{col.tag}</p>
+                  <h3 className="mt-1 font-display text-lg">{col.title}</h3>
+                  <span className="mt-2 inline-flex items-center gap-1 text-xs text-gold opacity-0 transition-opacity group-hover:opacity-100">
+                    Shop now <ArrowRight className="h-3 w-3" />
+                  </span>
+                </div>
+              </motion.div>
+            </Link>
           ))}
         </div>
       </section>
