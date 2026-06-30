@@ -139,7 +139,7 @@ function CheckoutPage() {
                       <p className="font-medium">{o.t}</p>
                       <p className="text-xs text-muted-foreground">{o.d}</p>
                     </div>
-                    <span className="text-sm font-semibold">{o.p}</span>
+                    <span className="font-sans font-semibold tracking-tight text-sm">{o.p}</span>
                   </label>
                 ))}
               </div>
@@ -171,14 +171,14 @@ function CheckoutPage() {
                     <p className="line-clamp-1 font-medium">{product.name}</p>
                     <p className="text-xs text-muted-foreground">Qty {qty}</p>
                   </div>
-                  <span className="font-semibold">{formatINR(product.price * qty)}</span>
+                  <span className="font-sans font-semibold tracking-tight">{formatINR(product.price * qty)}</span>
                 </li>
               ))}
             </ul>
             <div className="mt-5 space-y-2 border-t border-border pt-4 text-sm">
-              <div className="flex justify-between text-muted-foreground"><span>Subtotal</span><span className="text-foreground">{formatINR(subtotal)}</span></div>
-              <div className="flex justify-between text-muted-foreground"><span>Shipping</span><span className="text-foreground">{shipping === 0 ? "Free" : formatINR(shipping)}</span></div>
-              <div className="mt-3 flex justify-between font-display text-lg"><span>Total</span><span className="text-royal">{formatINR(total)}</span></div>
+              <div className="flex justify-between text-muted-foreground"><span>Subtotal</span><span className="font-sans font-semibold tracking-tight text-foreground">{formatINR(subtotal)}</span></div>
+              <div className="flex justify-between text-muted-foreground"><span>Shipping</span><span className="font-sans font-semibold tracking-tight text-foreground">{shipping === 0 ? "Free" : formatINR(shipping)}</span></div>
+              <div className="mt-3 flex justify-between font-sans font-semibold tracking-tight text-lg"><span>Total</span><span className="text-royal">{formatINR(total)}</span></div>
             </div>
             <button type="submit" disabled={cart.length === 0 || placing}
               className="mt-6 block w-full rounded-full bg-gold py-3.5 text-center text-sm font-semibold uppercase tracking-widest text-foreground btn-gold-glow btn-gold-glow-hover disabled:opacity-50">

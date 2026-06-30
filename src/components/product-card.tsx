@@ -59,8 +59,8 @@ export function ProductCard({ product }: { product: Product }) {
           {product.name}
         </h3>
         <div className="flex items-baseline gap-2 pt-1">
-          <span className="font-semibold text-royal">{formatINR(product.price)}</span>
-          <span className="text-xs text-muted-foreground line-through">{formatINR(product.mrp)}</span>
+          <span className="font-sans font-semibold tracking-tight text-royal">{formatINR(product.price)}</span>
+          <span className="font-sans font-medium text-xs tracking-tight text-muted-foreground line-through">{formatINR(product.mrp)}</span>
         </div>
       </div>
     </Link>

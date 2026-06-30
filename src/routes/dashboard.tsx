@@ -166,12 +166,12 @@ function Orders() {
               {o.items.map((item, idx) => (
                 <div key={idx} className="flex items-center justify-between gap-3 text-sm">
                   <p className="line-clamp-1 flex-1">{item.name} <span className="text-muted-foreground">x{item.quantity}</span></p>
-                  <span className="font-medium text-royal">{formatINR(item.price * item.quantity)}</span>
+                  <span className="font-sans font-semibold tracking-tight text-royal">{formatINR(item.price * item.quantity)}</span>
                 </div>
               ))}
             </div>
             <div className="mt-4 flex justify-end border-t border-border pt-3">
-              <span className="font-display text-lg text-royal">{formatINR(o.total)}</span>
+              <span className="font-sans font-semibold tracking-tight text-lg text-royal">{formatINR(o.total)}</span>
             </div>
           </div>
         ))}
@@ -240,7 +240,7 @@ function Wishlist() {
                 <img src={p.image} alt={p.name} className="h-full w-full object-cover transition-transform group-hover:scale-105" />
               </div>
               <p className="mt-2 font-display">{p.name}</p>
-              <p className="text-sm text-royal">{formatINR(p.price)}</p>
+              <p className="font-sans font-semibold tracking-tight text-sm text-royal">{formatINR(p.price)}</p>
             </Link>
           </div>
         ))}

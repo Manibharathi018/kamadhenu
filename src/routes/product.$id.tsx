@@ -172,10 +172,10 @@ function ProductPage() {
 
             {/* Price */}
             <div className="mt-4 flex items-baseline gap-3 flex-wrap">
-              <span className="font-display text-2xl text-royal">{formatINR(product.price)}</span>
+              <span className="font-sans font-semibold text-2xl tracking-tight text-royal">{formatINR(product.price)}</span>
               {product.mrp > product.price && (
                 <>
-                  <span className="text-sm text-muted-foreground line-through">{formatINR(product.mrp)}</span>
+                  <span className="font-sans font-medium text-sm text-muted-foreground line-through">{formatINR(product.mrp)}</span>
                   <span className="rounded-full bg-maroon/10 px-2.5 py-0.5 text-xs font-semibold text-maroon">
                     Save {savePct}%
                   </span>

@@ -40,7 +40,7 @@ function CartPage() {
                   <div className="min-w-0">
                     <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{product.category}</p>
                     <Link to="/product/$id" params={{ id: product.id }} className="block font-display text-lg leading-tight hover:text-royal">{product.name}</Link>
-                    <p className="mt-1 text-sm font-semibold text-royal">{formatINR(product.price)}</p>
+                    <p className="mt-1 font-sans font-semibold tracking-tight text-sm text-royal">{formatINR(product.price)}</p>
                     <div className="mt-3 inline-flex items-center rounded-full border border-border">
                       <button onClick={() => cartStore.setQty(product.id, qty - 1)} className="p-2 hover:text-royal"><Minus className="h-3.5 w-3.5" /></button>
                       <span className="w-8 text-center text-sm font-medium">{qty}</span>
@@ -49,7 +49,7 @@ function CartPage() {
                   </div>
                   <div className="flex flex-col items-end justify-between">
                     <button onClick={() => { cartStore.remove(product.id); toast.info("Removed from cart", { description: product.name }); }} className="text-muted-foreground hover:text-maroon" aria-label="Remove"><X className="h-5 w-5" /></button>
-                    <p className="font-semibold">{formatINR(product.price * qty)}</p>
+                    <p className="font-sans font-semibold tracking-tight">{formatINR(product.price * qty)}</p>
                   </div>
                 </li>
               ))}
@@ -61,7 +61,7 @@ function CartPage() {
                 <Row label="Subtotal" value={formatINR(subtotal)} />
                 <Row label="Shipping" value={shipping === 0 ? "Free" : formatINR(shipping)} />
                 <div className="my-3 h-px bg-border" />
-                <div className="flex justify-between font-display text-lg">
+                <div className="flex justify-between font-sans font-semibold tracking-tight text-lg">
                   <span>Total</span><span className="text-royal">{formatINR(total)}</span>
                 </div>
               </div>
@@ -79,5 +79,5 @@ function CartPage() {
 }
 
 function Row({ label, value }: { label: string; value: string }) {
-  return <div className="flex justify-between text-muted-foreground"><span>{label}</span><span className="text-foreground">{value}</span></div>;
+  return <div className="flex justify-between text-muted-foreground"><span>{label}</span><span className="font-sans font-semibold tracking-tight text-foreground">{value}</span></div>;
 }
