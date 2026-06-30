@@ -60,9 +60,9 @@ function ProductPage() {
   const requireAuth = (action: () => void, actionName: string) => {
     if (!user) {
       toast.error(`Please sign in to ${actionName}`, {
-        description: "Create a free account or sign in to continue.",
-        action: { label: "Sign In", onClick: () => navigate({ to: "/login" }) },
+        description: "Redirecting to sign in page...",
       });
+      setTimeout(() => navigate({ to: "/login" }), 800);
       return;
     }
     action();

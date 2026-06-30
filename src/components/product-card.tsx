@@ -17,9 +17,9 @@ export function ProductCard({ product }: { product: Product }) {
     e.stopPropagation();
     if (!user) {
       toast.error("Please sign in to add to wishlist", {
-        description: "Create a free account or sign in to save your favourite sarees.",
-        action: { label: "Sign In", onClick: () => navigate({ to: "/login" }) },
+        description: "Redirecting to sign in page...",
       });
+      setTimeout(() => navigate({ to: "/login" }), 800);
       return;
     }
     if (isWishlisted) {
