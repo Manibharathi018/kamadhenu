@@ -4,7 +4,9 @@ import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { formatINR } from "@/lib/products";
 import { fetchProduct, fetchProducts } from "@/lib/supabase";
 import { cartStore } from "@/lib/cart-store";
-import { Minus, Plus, ShieldCheck, Truck, RefreshCcw } from "lucide-react";
+import { wishlistStore, useWishlist } from "@/lib/wishlist-store";
+import { useAuth } from "@/lib/auth-context";
+import { Minus, Plus, ShieldCheck, Truck, RefreshCcw, Heart } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
 
 export const Route = createFileRoute("/product/$id")({
@@ -34,6 +36,9 @@ export const Route = createFileRoute("/product/$id")({
 function ProductPage() {
   const { product, related } = Route.useLoaderData();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const wishlist = useWishlist();
+  const isWishlisted = wishlist.some((p) => p.id === product.id);
   const [qty, setQty] = useState(1);
   const [activeImage, setActiveImage] = useState(product.image);
 
@@ -51,15 +56,33 @@ function ProductPage() {
     setQty(1);
   }, [product.image]);
 
+  const requireAuth = (action: () => void) => {
+    if (!user) {
+      navigate({ to: "/login" });
+      return;
+    }
+    action();
+  };
+
   const handleAddToCart = () => {
-    if (isSoldOut) return;
-    cartStore.add(product as any, qty);
+    requireAuth(() => {
+      if (isSoldOut) return;
+      cartStore.add(product as any, qty);
+    });
   };
 
   const handleBuyNow = () => {
-    if (isSoldOut) return;
-    cartStore.add(product as any, qty);
-    navigate({ to: "/checkout" });
+    requireAuth(() => {
+      if (isSoldOut) return;
+      cartStore.add(product as any, qty);
+      navigate({ to: "/checkout" });
+    });
+  };
+
+  const handleWishlist = () => {
+    requireAuth(() => {
+      wishlistStore.toggle(product as any);
+    });
   };
 
   return (
@@ -109,7 +132,20 @@ function ProductPage() {
           <div>
             <div className="flex items-center justify-between">
               <p className="text-[11px] uppercase tracking-[0.3em] text-gradient-gold">{product.category}</p>
-              <span className="text-xs font-mono text-muted-foreground bg-white/50 px-2 py-0.5 rounded border border-border/50">ID: {product.id}</span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleWishlist}
+                  className={`grid h-9 w-9 place-items-center rounded-full border transition-colors ${
+                    isWishlisted
+                      ? "border-red-300 bg-red-50 text-red-500"
+                      : "border-border bg-white/70 text-foreground/60 hover:text-red-400 hover:border-red-300"
+                  }`}
+                  aria-label={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+                >
+                  <Heart className={`h-4 w-4 transition-all ${isWishlisted ? "fill-red-500" : ""}`} />
+                </button>
+                <span className="text-xs font-mono text-muted-foreground bg-white/50 px-2 py-0.5 rounded border border-border/50">ID: {product.id}</span>
+              </div>
             </div>
             <h1 className="mt-2 font-display text-3xl md:text-4xl text-royal">{product.name}</h1>
 

@@ -1,12 +1,25 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Heart } from "lucide-react";
 import type { Product } from "@/lib/products";
 import { formatINR } from "@/lib/products";
 import { wishlistStore, useWishlist } from "@/lib/wishlist-store";
+import { useAuth } from "@/lib/auth-context";
 
 export function ProductCard({ product }: { product: Product }) {
   const wishlist = useWishlist();
   const isWishlisted = wishlist.some((p) => p.id === product.id);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleWishlistToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) {
+      navigate({ to: "/login" });
+      return;
+    }
+    wishlistStore.toggle(product);
+  };
 
   return (
     <Link to="/product/$id" params={{ id: product.id }}
@@ -16,11 +29,7 @@ export function ProductCard({ product }: { product: Product }) {
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
         <div className="absolute inset-0 bg-gradient-to-t from-royal/40 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
         <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            wishlistStore.toggle(product);
-          }}
+          onClick={handleWishlistToggle}
           className={`absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-ivory/90 backdrop-blur transition-colors ${
             isWishlisted
               ? "text-red-500"
