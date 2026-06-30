@@ -101,7 +101,7 @@ function ShopPage() {
             <SlidersHorizontal className="h-4 w-4" /> {isLoading ? "Loading..." : `${list.length} pieces`}
           </div>
           <div className="flex flex-wrap gap-2 items-center">
-            {["all", "Wedding", "Festive", "Traditional", "Reception"].map(o => {
+            {["all", "Wedding", "Festive", "Traditional"].map(o => {
               const isActive = (category || "all").toLowerCase() === o.toLowerCase();
               return (
                 <button key={o} onClick={() => handleCategoryClick(o)}
