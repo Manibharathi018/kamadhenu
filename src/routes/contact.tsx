@@ -29,7 +29,7 @@ import { useState } from "react";
 
 function ContactPage() {
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
 
   const handleWhatsAppSubmit = (e: React.FormEvent) => {
@@ -37,7 +37,7 @@ function ContactPage() {
     if (!name.trim() || !message.trim()) return;
 
     const whatsappNumber = "917810065250";
-    const text = `Name: ${name}\nEmail: ${email}\nMessage: ${message}`;
+    const text = `Name: ${name}\nPhone: ${phone}\nMessage: ${message}`;
     const encodedText = encodeURIComponent(text);
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedText}`;
 
@@ -54,7 +54,7 @@ function ContactPage() {
         <div className="mt-12 grid gap-10 md:grid-cols-[1fr_320px]">
           <form className="space-y-4" onSubmit={handleWhatsAppSubmit}>
             <Field label="Name" value={name} onChange={(e) => setName(e.target.value)} required />
-            <Field label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Field label="Phone No" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required />
             <label className="block">
               <span className="text-xs uppercase tracking-widest text-muted-foreground">Message</span>
               <textarea 
