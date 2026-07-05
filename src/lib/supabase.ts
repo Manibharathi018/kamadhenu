@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { compressImage } from './image-compressor';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -129,13 +130,26 @@ export const deleteProduct = async (id: string): Promise<void> => {
 };
 
 export const uploadProductImage = async (file: File): Promise<string> => {
-  const fileExt = file.name.split('.').pop();
+  let uploadData: File | Blob = file;
+  let fileExt = file.name.split('.').pop() || 'jpg';
+
+  if (file.type.startsWith('image/')) {
+    try {
+      uploadData = await compressImage(file, 1200, 0.8);
+      fileExt = 'jpg'; // Always upload as jpg after compression
+    } catch (e) {
+      console.error('Failed to compress image, uploading original:', e);
+    }
+  }
+
   const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
   const filePath = `${fileName}`;
 
   const { error: uploadError } = await supabase.storage
     .from('product-images')
-    .upload(filePath, file);
+    .upload(filePath, uploadData, {
+      contentType: uploadData.type || 'image/jpeg'
+    });
 
   if (uploadError) {
     console.error('Error uploading image:', uploadError);

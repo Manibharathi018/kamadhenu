@@ -12,10 +12,10 @@ import hero3 from "@/assets/herosectionimg3.jpeg";
 import hero4 from "@/assets/herosectionimg4.jpeg";
 import hero5 from "@/assets/herosectionimg5.jpeg";
 import heritage from "@/assets/heritage.jpg";
-import newArrivalsImg from "@/assets/newarrivals.png";
-import weddingImg from "@/assets/weddingcollection.png";
-import traditionalImg from "@/assets/traditionalcollection.png";
-import festiveImg from "@/assets/festivecollection.png";
+import newArrivalsImg from "@/assets/newarrivals.jpg";
+import weddingImg from "@/assets/weddingcollection.jpg";
+import traditionalImg from "@/assets/traditionalcollection.jpg";
+import festiveImg from "@/assets/festivecollection.jpg";
 
 const heroImages = [hero1, hero2, hero3, hero4, hero5];
 
