@@ -1,28 +1,42 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+﻿import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { useCart, cartStore, cartTotals } from "@/lib/cart-store";
 import { formatINR } from "@/lib/products";
 import { useAuth } from "@/lib/auth-context";
 import { createOrder, updateProductQuantity } from "@/lib/supabase";
-import { CreditCard, Smartphone, Wallet, Check, AlertCircle } from "lucide-react";
+import { createRazorpayOrder, verifyRazorpayPayment } from "@/lib/razorpay-server";
+import { CreditCard, Smartphone, Wallet, Check, AlertCircle, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/checkout")({
-  head: () => ({ meta: [{ title: "Checkout — Kamadhenu Silks" }] }),
+  head: () => ({ meta: [{ title: "Checkout - Kamadhenu Silks" }] }),
   component: CheckoutPage,
 });
+
+// Dynamically loads the Razorpay Checkout script (Step 2 - Frontend)
+const loadRazorpayScript = (): Promise<boolean> =>
+  new Promise((resolve) => {
+    if (typeof window === "undefined") { resolve(false); return; }
+    if ((window as any).Razorpay) { resolve(true); return; }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
 
 function CheckoutPage() {
   const cart = useCart();
   const { subtotal, shipping, total } = cartTotals(cart);
-  const [pay, setPay] = useState("upi");
+  const [pay, setPay] = useState("rzp");
   const [done, setDone] = useState(false);
   const [placing, setPlacing] = useState(false);
+  const [placingLabel, setPlacingLabel] = useState("Placing Order...");
   const [orderError, setOrderError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // Pre-fill form fields from user profile
   const [fullName, setFullName] = useState(user?.user_metadata?.full_name || "");
   const [phone, setPhone] = useState(user?.user_metadata?.phone || "");
   const [email, setEmail] = useState(user?.email || "");
@@ -31,50 +45,123 @@ function CheckoutPage() {
   const [state, setState] = useState("");
   const [pincode, setPincode] = useState("");
 
+  // Shared: save to Supabase + decrement stock + success
+  const finalizeOrder = async (opts: {
+    status: "pending" | "processing";
+    paymentRef?: string;
+    cartSnapshot: typeof cart;
+  }) => {
+    const shippingAddress = `${address}, ${city}, ${state} - ${pincode}`;
+    await createOrder({
+      user_id: user?.id || "guest",
+      user_email: email,
+      user_name: fullName,
+      items: opts.cartSnapshot.map(({ product, qty }) => ({
+        product_id: String(product.id),
+        name: product.name,
+        price: product.price,
+        quantity: qty,
+      })),
+      total,
+      status: opts.status,
+      shipping_address: opts.paymentRef
+        ? `${shippingAddress} | Razorpay: ${opts.paymentRef}`
+        : shippingAddress,
+      phone,
+    });
+
+    await Promise.all(
+      opts.cartSnapshot.map(({ product, qty }) =>
+        updateProductQuantity(String(product.id), qty)
+      )
+    );
+
+    cartStore.clear();
+    setDone(true);
+    setTimeout(() => navigate({ to: "/dashboard" }), 2400);
+  };
+
   const place = async (e: React.FormEvent) => {
     e.preventDefault();
     setOrderError(null);
     setPlacing(true);
 
-    // Snapshot cart before clearing
     const cartSnapshot = [...cart];
 
     try {
-      // 1. Create order in Supabase
-      await createOrder({
-        user_id: user?.id || "guest",
-        user_email: email,
-        user_name: fullName,
-        items: cartSnapshot.map(({ product, qty }) => ({
-          product_id: String(product.id),
-          name: product.name,
-          price: product.price,
-          quantity: qty,
-        })),
-        total,
-        status: "pending",
-        shipping_address: `${address}, ${city}, ${state} - ${pincode}`,
-        phone,
-      });
+      if (pay === "rzp") {
+        // Step 1: Create Razorpay order on the server (KEY_SECRET stays server-side)
+        setPlacingLabel("Creating order...");
+        const rzpOrder = await createRazorpayOrder({
+          data: { amount: total, receipt: `rcpt_${Date.now()}` },
+        });
 
-      // 2. Decrement product stock for each item
-      await Promise.all(
-        cartSnapshot.map(({ product, qty }) =>
-          updateProductQuantity(String(product.id), qty)
-        )
-      );
+        // Step 2: Load Razorpay script + open payment modal
+        setPlacingLabel("Opening payment...");
+        const loaded = await loadRazorpayScript();
+        if (!loaded) {
+          throw new Error("Failed to load Razorpay SDK. Please check your internet connection.");
+        }
 
-      // 3. Clear cart and show success
-      cartStore.clear();
-      setDone(true);
-      setTimeout(() => navigate({ to: "/dashboard" }), 2400);
+        await new Promise<void>((resolve, reject) => {
+          const rzp = new (window as any).Razorpay({
+            key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+            order_id: rzpOrder.order_id,
+            amount: rzpOrder.amount,
+            currency: rzpOrder.currency,
+            name: "Kamadhenu Silks",
+            description: "Heirloom Kanchipuram Silk Sarees",
+            prefill: { name: fullName, email, contact: phone },
+            notes: { address: `${address}, ${city}, ${state} - ${pincode}` },
+            theme: { color: "#B39255" },
+
+            // Step 2 success callback - receives all 3 IDs
+            handler: async function (response: {
+              razorpay_payment_id: string;
+              razorpay_order_id: string;
+              razorpay_signature: string;
+            }) {
+              try {
+                // Step 3: Verify signature on the server before saving order
+                setPlacingLabel("Verifying payment...");
+                await verifyRazorpayPayment({ data: response });
+
+                setPlacingLabel("Saving order...");
+                await finalizeOrder({
+                  status: "processing",
+                  paymentRef: response.razorpay_payment_id,
+                  cartSnapshot,
+                });
+                resolve();
+              } catch (err) {
+                reject(err);
+              }
+            },
+            modal: {
+              ondismiss: () =>
+                reject(new Error("Payment was cancelled. Your order has not been placed.")),
+            },
+          });
+
+          rzp.on("payment.failed", (resp: any) =>
+            reject(new Error(`Payment failed: ${resp.error?.description || "Unknown error"}`))
+          );
+
+          rzp.open();
+        });
+      } else {
+        // Non-Razorpay mock flow (UPI / Card)
+        setPlacingLabel("Placing Order...");
+        await finalizeOrder({ status: "pending", cartSnapshot });
+      }
     } catch (err: any) {
-      console.error("Error placing order:", err);
-      const msg =
+      console.error("Checkout error:", err);
+      setOrderError(
         err?.message ||
-        (typeof err === "string" ? err : "Failed to place order. Please try again.");
-      setOrderError(msg);
+          (typeof err === "string" ? err : "Failed to place order. Please try again.")
+      );
       setPlacing(false);
+      setPlacingLabel("Placing Order...");
     }
   };
 
@@ -88,7 +175,7 @@ function CheckoutPage() {
           </div>
           <h1 className="mt-6 font-display text-3xl text-royal">Order Placed!</h1>
           <p className="mt-3 text-muted-foreground">
-            Your heirloom is on its way. Redirecting to your orders…
+            Your heirloom is on its way. Redirecting to your orders...
           </p>
         </div>
       </div>
@@ -101,7 +188,6 @@ function CheckoutPage() {
       <div className="mx-auto max-w-7xl px-6 py-12">
         <h1 className="font-display text-4xl text-royal">Checkout</h1>
 
-        {/* Error Banner */}
         {orderError && (
           <div className="mt-6 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
@@ -152,12 +238,19 @@ function CheckoutPage() {
                   { id: "card", t: "Card", i: CreditCard },
                   { id: "rzp", t: "Razorpay", i: Wallet },
                 ].map(o => (
-                  <button key={o.id} type="button" onClick={() => setPay(o.id)}
+                  <button key={o.id} type="button" id={`pay-${o.id}`} onClick={() => setPay(o.id)}
                     className={`flex items-center gap-3 rounded-lg border p-4 transition-colors ${pay === o.id ? "border-gold bg-gold/5" : "border-border bg-card hover:border-gold/50"}`}>
-                    <o.i className="h-5 w-5 text-royal" /> <span className="font-medium">{o.t}</span>
+                    <o.i className="h-5 w-5 text-royal" />
+                    <span className="font-medium">{o.t}</span>
                   </button>
                 ))}
               </div>
+              {pay === "rzp" && (
+                <div className="mt-3 flex items-center gap-2 rounded-md bg-green-50 border border-green-100 px-3 py-2 text-xs text-green-700">
+                  <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
+                  <span>Secured & verified by Razorpay. A payment modal will open after clicking Place Order.</span>
+                </div>
+              )}
             </Section>
           </div>
 
@@ -176,13 +269,26 @@ function CheckoutPage() {
               ))}
             </ul>
             <div className="mt-5 space-y-2 border-t border-border pt-4 text-sm">
-              <div className="flex justify-between text-muted-foreground"><span>Subtotal</span><span className="font-sans font-semibold tracking-tight text-foreground">{formatINR(subtotal)}</span></div>
-              <div className="flex justify-between text-muted-foreground"><span>Shipping</span><span className="font-sans font-semibold tracking-tight text-foreground">{shipping === 0 ? "Free" : formatINR(shipping)}</span></div>
-              <div className="mt-3 flex justify-between font-sans font-semibold tracking-tight text-lg"><span>Total</span><span className="text-royal">{formatINR(total)}</span></div>
+              <div className="flex justify-between text-muted-foreground">
+                <span>Subtotal</span>
+                <span className="font-sans font-semibold tracking-tight text-foreground">{formatINR(subtotal)}</span>
+              </div>
+              <div className="flex justify-between text-muted-foreground">
+                <span>Shipping</span>
+                <span className="font-sans font-semibold tracking-tight text-foreground">{shipping === 0 ? "Free" : formatINR(shipping)}</span>
+              </div>
+              <div className="mt-3 flex justify-between font-sans font-semibold tracking-tight text-lg">
+                <span>Total</span>
+                <span className="text-royal">{formatINR(total)}</span>
+              </div>
             </div>
-            <button type="submit" disabled={cart.length === 0 || placing}
-              className="mt-6 block w-full rounded-full bg-gold py-3.5 text-center text-sm font-semibold uppercase tracking-widest text-foreground btn-gold-glow btn-gold-glow-hover disabled:opacity-50">
-              {placing ? "Placing Order…" : "Place Order"}
+            <button
+              type="submit"
+              id="place-order-btn"
+              disabled={cart.length === 0 || placing}
+              className="mt-6 block w-full rounded-full bg-gold py-3.5 text-center text-sm font-semibold uppercase tracking-widest text-foreground btn-gold-glow btn-gold-glow-hover disabled:opacity-50"
+            >
+              {placing ? placingLabel : "Place Order"}
             </button>
           </aside>
         </form>
@@ -201,12 +307,18 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function Field({ label, className = "", ...rest }: React.InputHTMLAttributes<HTMLInputElement> & { label: string }) {
+function Field({
+  label,
+  className = "",
+  ...rest
+}: React.InputHTMLAttributes<HTMLInputElement> & { label: string }) {
   return (
     <label className={`block ${className}`}>
       <span className="text-xs uppercase tracking-widest text-muted-foreground">{label}</span>
-      <input {...rest}
-        className="mt-1.5 w-full rounded-md border border-border bg-card px-3 py-2.5 text-sm outline-none focus:border-gold" />
+      <input
+        {...rest}
+        className="mt-1.5 w-full rounded-md border border-border bg-card px-3 py-2.5 text-sm outline-none focus:border-gold"
+      />
     </label>
   );
 }

@@ -28,6 +28,7 @@ function AdminDashboard() {
     id: "",
     name: "",
     category: "",
+    occasion: "",
     image: "",
     quantity: 0,
     price: 0,
@@ -117,7 +118,7 @@ function AdminDashboard() {
       price: productForm.price,
       mrp: productForm.mrp || productForm.price,
       fabric: productForm.fabric,
-      occasion: "",
+      occasion: productForm.occasion,
       color: productForm.color,
       description: productForm.description,
       images: finalImages,
@@ -126,7 +127,7 @@ function AdminDashboard() {
     addProduct(newProduct, {
       onSuccess: () => {
         alert("Product added successfully!");
-        setProductForm({ id: "", name: "", category: "", image: "", quantity: 0, price: 0, mrp: 0, fabric: "", color: "", description: "" });
+        setProductForm({ id: "", name: "", category: "", occasion: "", image: "", quantity: 0, price: 0, mrp: 0, fabric: "", color: "", description: "" });
         setImageFiles([]);
       },
       onError: (error) => {
@@ -354,10 +355,30 @@ function AdminDashboard() {
                       required
                     >
                       <option value="">Select category</option>
+                      <option value="Butta Sarees">Butta Sarees</option>
+                      <option value="Pure Brocade">Pure Brocade</option>
+                      <option value="Pure Jakkad">Pure Jakkad</option>
+                      <option value="Korvai Sarees">Korvai Sarees</option>
+                      <option value="Pure Checked Butta">Pure Checked Butta</option>
+                      <option value="Border Butta">Border Butta</option>
+                      <option value="Body Butta">Body Butta</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-300 mb-2">
+                      Collection / Occasion *
+                    </label>
+                    <select
+                      value={productForm.occasion}
+                      onChange={(e) => setProductForm({ ...productForm, occasion: e.target.value })}
+                      className="w-full bg-neutral-700 border border-neutral-600 text-neutral-100 rounded px-3 py-2"
+                      required
+                    >
+                      <option value="">Select collection</option>
                       <option value="Wedding">Wedding</option>
                       <option value="Festive">Festive</option>
                       <option value="Traditional">Traditional</option>
-                      <option value="New Arrivals">New Arrivals</option>
                     </select>
                   </div>
 

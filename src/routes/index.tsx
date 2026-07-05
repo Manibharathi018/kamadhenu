@@ -12,6 +12,10 @@ import hero3 from "@/assets/herosectionimg3.jpeg";
 import hero4 from "@/assets/herosectionimg4.jpeg";
 import hero5 from "@/assets/herosectionimg5.jpeg";
 import heritage from "@/assets/heritage.jpg";
+import newArrivalsImg from "@/assets/newarrivals.png";
+import weddingImg from "@/assets/weddingcollection.png";
+import traditionalImg from "@/assets/traditionalcollection.png";
+import festiveImg from "@/assets/festivecollection.png";
 
 const heroImages = [hero1, hero2, hero3, hero4, hero5];
 
@@ -41,12 +45,20 @@ function HomePage() {
     return () => clearInterval(timer);
   }, []);
 
-  const categories = ["Kanchipuram", "Arani", "Sungudi", "Chettinad", "Tussar", "Paithani", "Wedding"];
+  const categories = [
+    "Butta Sarees",
+    "Pure Brocade",
+    "Pure Jakkad",
+    "Korvai Sarees",
+    "Pure Checked Butta",
+    "Border Butta",
+    "Body Butta"
+  ];
   const collections = [
-    { title: "Wedding", tag: "Bridal heirloom", img: products[5].image, search: { category: "Wedding" } },
-    { title: "Festive", tag: "Celebrations", img: products[1].image, search: { category: "Festive" } },
-    { title: "Traditional", tag: "Timeless weaves", img: products[0].image, search: { category: "Traditional" } },
-    { title: "New Arrivals", tag: "Just in", img: products[4].image, search: { sort: "new" } },
+    { title: "New Arrivals", tag: "Just in", img: newArrivalsImg, search: { sort: "new" } },
+    { title: "Wedding", tag: "Bridal heirloom", img: weddingImg, search: { category: "Wedding" } },
+    { title: "Traditional", tag: "Timeless weaves", img: traditionalImg, search: { category: "Traditional" } },
+    { title: "Festive", tag: "Celebrations", img: festiveImg, search: { category: "Festive" } },
   ];
 
   return (
