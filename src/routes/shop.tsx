@@ -29,6 +29,7 @@ function ShopPage() {
         ...prev,
         category: cVal === "all" ? undefined : cVal,
       }),
+      replace: true,
     });
   };
 
@@ -39,6 +40,7 @@ function ShopPage() {
         ...prev,
         sort: sortVal === "new" ? undefined : sortVal,
       }),
+      replace: true,
     });
   };
 

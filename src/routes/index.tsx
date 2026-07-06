@@ -16,13 +16,13 @@ import newArrivalsImg from "@/assets/newarrivals.jpg";
 import weddingImg from "@/assets/weddingcollection.jpg";
 import traditionalImg from "@/assets/traditionalcollection.jpg";
 import festiveImg from "@/assets/festivecollection.jpg";
-import bodyButtaImg from "@/assets/Body Butta.png";
-import borderButtaImg from "@/assets/Border Butta.png";
-import buttaSareesImg from "@/assets/Butta sarees.png";
-import korvaiSareesImg from "@/assets/Korvai sarees.png";
-import pureBrocadeImg from "@/assets/Pure Brocade.png";
-import pureCheckedButtaImg from "@/assets/Pure Checked Butta.png";
-import pureJakkadImg from "@/assets/Pure Jakkad.png";
+import bodyButtaImg from "@/assets/Body Butta.webp";
+import borderButtaImg from "@/assets/Border Butta.webp";
+import buttaSareesImg from "@/assets/Butta sarees.webp";
+import korvaiSareesImg from "@/assets/Korvai sarees.webp";
+import pureBrocadeImg from "@/assets/Pure Brocade.webp";
+import pureCheckedButtaImg from "@/assets/Pure Checked Butta.webp";
+import pureJakkadImg from "@/assets/Pure Jakkad.webp";
 
 const heroImages = [hero1, hero2, hero3, hero4, hero5];
 
