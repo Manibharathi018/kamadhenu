@@ -16,6 +16,13 @@ import newArrivalsImg from "@/assets/newarrivals.jpg";
 import weddingImg from "@/assets/weddingcollection.jpg";
 import traditionalImg from "@/assets/traditionalcollection.jpg";
 import festiveImg from "@/assets/festivecollection.jpg";
+import bodyButtaImg from "@/assets/Body Butta.png";
+import borderButtaImg from "@/assets/Border Butta.png";
+import buttaSareesImg from "@/assets/Butta sarees.png";
+import korvaiSareesImg from "@/assets/Korvai sarees.png";
+import pureBrocadeImg from "@/assets/Pure Brocade.png";
+import pureCheckedButtaImg from "@/assets/Pure Checked Butta.png";
+import pureJakkadImg from "@/assets/Pure Jakkad.png";
 
 const heroImages = [hero1, hero2, hero3, hero4, hero5];
 
@@ -46,13 +53,13 @@ function HomePage() {
   }, []);
 
   const categories = [
-    "Butta Sarees",
-    "Pure Brocade",
-    "Pure Jakkad",
-    "Korvai Sarees",
-    "Pure Checked Butta",
-    "Border Butta",
-    "Body Butta"
+    { name: "Butta Sarees", img: buttaSareesImg },
+    { name: "Pure Brocade", img: pureBrocadeImg },
+    { name: "Pure Jakkad", img: pureJakkadImg },
+    { name: "Korvai Sarees", img: korvaiSareesImg },
+    { name: "Pure Checked Butta", img: pureCheckedButtaImg },
+    { name: "Border Butta", img: borderButtaImg },
+    { name: "Body Butta", img: bodyButtaImg }
   ];
   const collections = [
     { title: "New Arrivals", tag: "Just in", img: newArrivalsImg, search: { sort: "new" } },
@@ -155,18 +162,18 @@ function HomePage() {
         <SectionHeading kicker="Shop by Weave" title="Our Categories" />
         <div className="mt-6 flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {categories.map((c, i) => (
-            <Link key={c} to="/shop" search={{ category: c }}
+            <Link key={c.name} to="/shop" search={{ category: c.name }}
               className="snap-start shrink-0 text-center cursor-pointer group block">
               <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
                 transition={{ delay: i * 0.05, duration: 0.5 }}>
                 <div className="relative mx-auto h-28 w-28 md:h-32 md:w-32">
                   <div className="absolute inset-0 rounded-full bg-gradient-to-br from-gold/60 to-royal/60 p-[2px] transition-transform group-hover:scale-105">
                     <div className="h-full w-full overflow-hidden rounded-full bg-ivory">
-                      <img src={products[i % products.length].image} alt={c} className="h-full w-full object-cover" loading="lazy" />
+                      <img src={c.img} alt={c.name} className="h-full w-full object-cover" loading="lazy" />
                     </div>
                   </div>
                 </div>
-                <p className="mt-3 font-display text-sm text-foreground">{c}</p>
+                <p className="mt-3 font-display text-sm text-foreground">{c.name}</p>
               </motion.div>
             </Link>
           ))}
