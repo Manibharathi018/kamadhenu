@@ -20,8 +20,19 @@ function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("sales");
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
-  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split("T")[0]);
-  const [showTodayOnly, setShowTodayOnly] = useState(false);
+  const getSixtyDaysAgo = () => {
+    const d = new Date();
+    d.setDate(d.getDate() - 60);
+    return d.toISOString().split("T")[0];
+  };
+
+  const [startDate, setStartDate] = useState<string>(getSixtyDaysAgo());
+  const [endDate, setEndDate] = useState<string>(new Date().toISOString().split("T")[0]);
+
+  const handleShowAllOrders = () => {
+    setStartDate("2020-01-01");
+    setEndDate(new Date().toISOString().split("T")[0]);
+  };
 
   // Product management state
   const [productForm, setProductForm] = useState({
@@ -67,15 +78,14 @@ function AdminDashboard() {
     loadOrders();
   }, []);
 
-  // Filter orders by date
+  // Filter orders by date range
   useEffect(() => {
-    if (showTodayOnly) {
-      const filtered = orders.filter(order => order.created_at.startsWith(selectedDate));
-      setFilteredOrders(filtered);
-    } else {
-      setFilteredOrders(orders);
-    }
-  }, [selectedDate, showTodayOnly, orders]);
+    const filtered = orders.filter((order) => {
+      const orderDate = order.created_at.substring(0, 10);
+      return orderDate >= startDate && orderDate <= endDate;
+    });
+    setFilteredOrders(filtered);
+  }, [startDate, endDate, orders]);
 
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -226,26 +236,35 @@ function AdminDashboard() {
 
               {/* Date Filter */}
               <div className="flex gap-4 mb-6 items-end flex-wrap">
-                <div className="flex-1 min-w-[200px]">
+                <div className="min-w-[150px] flex-1">
                   <label className="block text-sm font-medium text-neutral-300 mb-2">
-                    Select Date
+                    Start Date
                   </label>
                   <Input
                     type="date"
-                    value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
                     className="bg-neutral-700 border-neutral-600 text-neutral-100"
                   />
                 </div>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={showTodayOnly}
-                    onChange={(e) => setShowTodayOnly(e.target.checked)}
-                    className="w-4 h-4 rounded border-neutral-600"
+                <div className="min-w-[150px] flex-1">
+                  <label className="block text-sm font-medium text-neutral-300 mb-2">
+                    End Date
+                  </label>
+                  <Input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="bg-neutral-700 border-neutral-600 text-neutral-100"
                   />
-                  <span className="text-neutral-300">Show today only</span>
-                </label>
+                </div>
+                <Button
+                  onClick={handleShowAllOrders}
+                  variant="outline"
+                  className="border-neutral-600 text-neutral-200 hover:bg-neutral-800"
+                >
+                  Show All Orders
+                </Button>
               </div>
 
               {/* Orders Table */}
