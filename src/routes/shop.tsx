@@ -4,6 +4,7 @@ import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { ProductCard } from "@/components/product-card";
 import { useProducts } from "@/lib/hooks";
 import { SlidersHorizontal } from "lucide-react";
+import { fetchProducts } from "@/lib/supabase";
 
 export const Route = createFileRoute("/shop")({
   validateSearch: (search: Record<string, unknown>): { q?: string; category?: string; sort?: string } => {
@@ -12,6 +13,12 @@ export const Route = createFileRoute("/shop")({
       category: (search.category as string) || undefined,
       sort: (search.sort as string) || undefined,
     }
+  },
+  loader: async ({ context: { queryClient } }) => {
+    await queryClient.ensureQueryData({
+      queryKey: ["products"],
+      queryFn: fetchProducts,
+    });
   },
   head: () => ({ meta: [{ title: "Shop Sarees — Kamadhenu Silks" }, { name: "description", content: "Browse our handwoven Kanchipuram silk saree collection." }] }),
   component: ShopPage,
