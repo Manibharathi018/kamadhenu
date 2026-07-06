@@ -181,18 +181,12 @@ export function SiteFooter() {
             title: "Care",
             links: [
               { label: "Contact", to: "/contact" },
-              { label: "Shipping", to: "#" },
-              { label: "Returns", to: "#" },
-              { label: "Silk Care", to: "#" },
             ]
           },
           {
             title: "About",
             links: [
               { label: "Our Heritage", to: "/about" },
-              { label: "Weavers", to: "/about" },
-              { label: "Press", to: "#" },
-              { label: "Journal", to: "#" },
             ]
           },
         ].map(col => (
