@@ -34,6 +34,12 @@ function AdminDashboard() {
     setEndDate(new Date().toISOString().split("T")[0]);
   };
 
+  const handleShowTodayOrders = () => {
+    const today = new Date().toISOString().split("T")[0];
+    setStartDate(today);
+    setEndDate(today);
+  };
+
   // Product management state
   const [productForm, setProductForm] = useState({
     id: "",
@@ -258,13 +264,22 @@ function AdminDashboard() {
                     className="bg-neutral-700 border-neutral-600 text-neutral-100"
                   />
                 </div>
-                <Button
-                  onClick={handleShowAllOrders}
-                  variant="outline"
-                  className="border-neutral-600 text-neutral-200 hover:bg-neutral-800"
-                >
-                  Show All Orders
-                </Button>
+                 <div className="flex gap-2">
+                  <Button
+                    onClick={handleShowTodayOrders}
+                    variant="outline"
+                    className="border-neutral-600 text-neutral-200 hover:bg-neutral-800"
+                  >
+                    Today's Sales
+                  </Button>
+                  <Button
+                    onClick={handleShowAllOrders}
+                    variant="outline"
+                    className="border-neutral-600 text-neutral-200 hover:bg-neutral-800"
+                  >
+                    Show All Orders
+                  </Button>
+                </div>
               </div>
 
               {/* Orders Table */}
