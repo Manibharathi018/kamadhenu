@@ -41,6 +41,23 @@ const fadeUp = {
   show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const } },
 };
 
+const categories = [
+  { name: "Butta Sarees", img: buttaSareesImg },
+  { name: "Pure Brocade", img: pureBrocadeImg },
+  { name: "Pure Jakkad", img: pureJakkadImg },
+  { name: "Korvai Sarees", img: korvaiSareesImg },
+  { name: "Pure Checked Butta", img: pureCheckedButtaImg },
+  { name: "Border Butta", img: borderButtaImg },
+  { name: "Body Butta", img: bodyButtaImg }
+];
+
+const collections = [
+  { title: "New Arrivals", tag: "Just in", img: newArrivalsImg, search: { sort: "new" } },
+  { title: "Wedding", tag: "Bridal heirloom", img: weddingImg, search: { category: "Wedding" } },
+  { title: "Traditional", tag: "Timeless weaves", img: traditionalImg, search: { category: "Traditional" } },
+  { title: "Festive", tag: "Celebrations", img: festiveImg, search: { category: "Festive" } },
+];
+
 function HomePage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { data: dbProducts = [] } = useProducts();
@@ -51,22 +68,6 @@ function HomePage() {
     }, 4000);
     return () => clearInterval(timer);
   }, []);
-
-  const categories = [
-    { name: "Butta Sarees", img: buttaSareesImg },
-    { name: "Pure Brocade", img: pureBrocadeImg },
-    { name: "Pure Jakkad", img: pureJakkadImg },
-    { name: "Korvai Sarees", img: korvaiSareesImg },
-    { name: "Pure Checked Butta", img: pureCheckedButtaImg },
-    { name: "Border Butta", img: borderButtaImg },
-    { name: "Body Butta", img: bodyButtaImg }
-  ];
-  const collections = [
-    { title: "New Arrivals", tag: "Just in", img: newArrivalsImg, search: { sort: "new" } },
-    { title: "Wedding", tag: "Bridal heirloom", img: weddingImg, search: { category: "Wedding" } },
-    { title: "Traditional", tag: "Timeless weaves", img: traditionalImg, search: { category: "Traditional" } },
-    { title: "Festive", tag: "Celebrations", img: festiveImg, search: { category: "Festive" } },
-  ];
 
   return (
     <div className="min-h-screen bg-ivory">
@@ -104,8 +105,8 @@ function HomePage() {
             <div className="absolute -inset-4 rounded-2xl bg-gradient-to-br from-gold/40 via-transparent to-transparent blur-2xl" />
             <div className="relative overflow-hidden rounded-2xl border border-gold/30 shadow-luxe h-[520px] md:h-[640px] w-full group">
               <div
-                className="flex h-full w-full transition-transform duration-1000 ease-in-out"
-                style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
+                className="flex h-full w-full transition-transform duration-1000 ease-in-out gpu-accelerated will-change-transform"
+                style={{ transform: `translate3d(-${currentImageIndex * 100}%, 0px, 0px)` }}
               >
                 {heroImages.map((src, idx) => (
                   <img
@@ -114,6 +115,9 @@ function HomePage() {
                     alt={`Bride in royal purple Kanchipuram silk saree ${idx + 1}`}
                     width={1080}
                     height={1600}
+                    loading={idx === 0 ? "eager" : "lazy"}
+                    fetchPriority={idx === 0 ? "high" : "low"}
+                    decoding={idx === 0 ? "sync" : "async"}
                     className="h-full w-full flex-shrink-0 object-cover"
                   />
                 ))}
@@ -169,7 +173,7 @@ function HomePage() {
                 <div className="relative mx-auto h-28 w-28 md:h-32 md:w-32">
                   <div className="absolute inset-0 rounded-full bg-gradient-to-br from-gold/60 to-royal/60 p-[2px] transition-transform group-hover:scale-105">
                     <div className="h-full w-full overflow-hidden rounded-full bg-ivory">
-                      <img src={c.img} alt={c.name} className="h-full w-full object-cover" loading="lazy" />
+                      <img src={c.img} alt={c.name} className="h-full w-full object-cover" loading="lazy" decoding="async" />
                     </div>
                   </div>
                 </div>
@@ -190,7 +194,7 @@ function HomePage() {
               <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
                 transition={{ delay: i * 0.08, duration: 0.6 }}
                 className="h-full w-full relative">
-                <img src={col.img} alt={col.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                <img src={col.img} alt={col.title} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 will-change-transform" />
                 <div className="absolute inset-0 bg-gradient-to-t from-royal via-royal/40 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-4 text-royal-foreground">
                   <p className="text-[9px] uppercase tracking-[0.2em] text-gradient-gold">{col.tag}</p>
@@ -223,7 +227,7 @@ function HomePage() {
         <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-6 py-12 md:grid-cols-2">
           <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}
             className="relative overflow-hidden rounded-2xl shadow-luxe">
-            <img src={heritage} alt="Handwoven Kanchipuram silk" width={1200} height={900} loading="lazy" className="h-full w-full object-cover aspect-[4/3]" />
+            <img src={heritage} alt="Handwoven Kanchipuram silk" width={1200} height={900} loading="lazy" decoding="async" className="h-full w-full object-cover aspect-[4/3]" />
           </motion.div>
           <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
             <p className="text-[11px] uppercase tracking-[0.3em] text-gradient-gold">Heritage</p>

@@ -4,10 +4,12 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
+  ScrollRestoration,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
@@ -15,6 +17,44 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "../lib/auth-context";
 import { AdminProvider } from "../lib/admin-context";
 import { UserDataProvider } from "../lib/user-data-context";
+
+function TopLoadingBar() {
+  const state = useRouterState();
+  const isLoading = state.status === "pending";
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    if (isLoading) {
+      setProgress(10);
+      const timer = setInterval(() => {
+        setProgress((prev) => {
+          if (prev >= 90) return prev;
+          return prev + Math.random() * 8;
+        });
+      }, 150);
+      return () => clearInterval(timer);
+    } else {
+      setProgress(100);
+      const timer = setTimeout(() => {
+        setProgress(0);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading]);
+
+  if (progress === 0) return null;
+
+  return (
+    <div
+      className="fixed top-0 left-0 right-0 z-[99999] h-[3px] bg-gradient-to-r from-gold/50 via-gold to-gold-soft transition-transform duration-300 ease-out origin-left"
+      style={{
+        transform: `scaleX(${progress / 100}) translateZ(0)`,
+        boxShadow: "0 0 10px oklch(0.74 0.13 82 / 0.7), 0 0 5px oklch(0.74 0.13 82 / 0.4)",
+        willChange: "transform",
+      }}
+    />
+  );
+}
 
 function NotFoundComponent() {
   return (
@@ -91,6 +131,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      { rel: "preload", as: "style", href: "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" },
       { rel: "stylesheet", href: appCss },
     ],
@@ -109,6 +150,7 @@ function RootShell({ children }: { children: ReactNode }) {
       </head>
       <body>
         {children}
+        <ScrollRestoration />
         <Scripts />
       </body>
     </html>
@@ -123,6 +165,8 @@ function RootComponent() {
       <AdminProvider>
         <AuthProvider>
           <UserDataProvider>
+            {/* Custom hardware-accelerated loading indicator */}
+            <TopLoadingBar />
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
             <Outlet />
             <Toaster

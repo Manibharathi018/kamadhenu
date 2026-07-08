@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
+import { AnimatePresence, motion } from "framer-motion";
 import { formatINR } from "@/lib/products";
 import { fetchProduct, fetchProducts } from "@/lib/supabase";
 import { cartStore } from "@/lib/cart-store";
@@ -123,10 +124,28 @@ function ProductPage() {
         <div className="grid gap-12 lg:grid-cols-2">
           {/* ── Images ── */}
           <div className="space-y-4">
-            <div className="overflow-hidden rounded-2xl bg-card shadow-luxe relative">
-              <img src={activeImage} alt={product.name} className="aspect-[4/5] w-full object-cover transition-transform duration-700 hover:scale-105" />
+            {/* Background pre-decoding for additional gallery images */}
+            <div className="hidden" aria-hidden="true">
+              {product.images?.map((src) => (
+                <img key={src} src={src} decoding="async" loading="eager" alt="" />
+              ))}
+            </div>
+            <div className="overflow-hidden rounded-2xl bg-card shadow-luxe relative aspect-[4/5] w-full">
+              <AnimatePresence mode="popLayout" initial={false}>
+                <motion.img
+                  key={activeImage}
+                  src={activeImage}
+                  alt={product.name}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25, ease: "easeInOut" }}
+                  decoding="async"
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 hover:scale-105 will-change-transform"
+                />
+              </AnimatePresence>
               {isSoldOut && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-2xl">
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-2xl z-10">
                   <span className="rounded-full bg-maroon px-6 py-2 text-sm font-bold uppercase tracking-widest text-white shadow-lg animate-pulse">
                     Sold Out
                   </span>

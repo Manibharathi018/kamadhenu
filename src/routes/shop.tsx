@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { ProductCard } from "@/components/product-card";
+import { ProductCardSkeleton } from "@/components/product-skeleton";
 import { useProducts } from "@/lib/hooks";
 import { SlidersHorizontal } from "lucide-react";
 import { fetchProducts } from "@/lib/supabase";
@@ -29,7 +30,7 @@ function ShopPage() {
   const navigate = useNavigate();
   const { data: products = [], isLoading, error } = useProducts();
 
-  const handleCategoryClick = (cVal: string) => {
+  const handleCategoryClick = useCallback((cVal: string) => {
     navigate({
       to: "/shop",
       search: (prev) => ({
@@ -38,9 +39,9 @@ function ShopPage() {
       }),
       replace: true,
     });
-  };
+  }, [navigate]);
 
-  const handleSortChange = (sortVal: string) => {
+  const handleSortChange = useCallback((sortVal: string) => {
     navigate({
       to: "/shop",
       search: (prev) => ({
@@ -49,7 +50,7 @@ function ShopPage() {
       }),
       replace: true,
     });
-  };
+  }, [navigate]);
 
   const list = useMemo(() => {
     let l = [...products];
@@ -138,7 +139,9 @@ function ShopPage() {
 
         <div className="mt-10 grid gap-x-6 gap-y-12 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {isLoading ? (
-            <div className="col-span-full text-center py-8 text-muted-foreground">Loading products...</div>
+            Array.from({ length: 8 }).map((_, i) => (
+              <ProductCardSkeleton key={i} />
+            ))
           ) : list.length === 0 ? (
             <div className="col-span-full text-center py-8 text-muted-foreground">No products found.</div>
           ) : (

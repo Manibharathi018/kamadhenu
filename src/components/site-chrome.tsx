@@ -2,7 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { Search, User, Heart, ShoppingBag, Menu, X } from "lucide-react";
 import { useCart, cartTotals } from "@/lib/cart-store";
 import { useWishlist } from "@/lib/wishlist-store";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useProducts } from "@/lib/hooks";
 import logoUrl from "@/assets/logo.png";
@@ -19,12 +19,14 @@ export function SiteHeader() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const suggestions = searchQuery.trim().length > 1
-    ? products.filter(p => 
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        String(p.id).toLowerCase().includes(searchQuery.toLowerCase())
-      ).slice(0, 5)
-    : [];
+  const suggestions = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (query.length <= 1) return [];
+    return products.filter(p => 
+      p.name.toLowerCase().includes(query) || 
+      String(p.id).toLowerCase().includes(query)
+    ).slice(0, 5);
+  }, [searchQuery, products]);
 
   const nav = [
     { to: "/", label: "Home" },
@@ -56,7 +58,7 @@ export function SiteHeader() {
           <nav className="hidden lg:flex flex-1 items-center justify-center gap-8 text-sm font-medium">
             {nav.map(n => (
               <Link key={n.label} to={n.to}
-                className="relative text-foreground/80 hover:text-royal transition-colors after:absolute after:left-0 after:-bottom-1 after:h-px after:w-0 after:bg-gold after:transition-all hover:after:w-full">
+                className="relative text-foreground/80 hover:text-royal transition-colors after:absolute after:left-0 after:-bottom-1 after:h-px after:w-full after:bg-gold after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100 will-change-transform">
                 {n.label}
               </Link>
             ))}
