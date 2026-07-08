@@ -233,7 +233,7 @@ function HomePage() {
             <p className="text-[11px] uppercase tracking-[0.3em] text-gradient-gold">Heritage</p>
             <h2 className="mt-3 font-display text-4xl text-royal">Woven by hands, blessed by tradition.</h2>
             <p className="mt-5 leading-relaxed text-muted-foreground">
-              For four generations our weavers have practiced the ancient art of Kanchipuram silk — a thousand-year-old craft where each saree is a quiet ceremony of three silk threads twisted with gold zari to last a lifetime.
+              From our humble beginnings as Lakshmi Sarees to the trusted name Kamadhenu Silks, we have been preserving the timeless artistry of Kanchipuram silk for over three decades. Every saree is a celebration of tradition, elegance, and uncompromising quality.
             </p>
             <Link to="/about" className="mt-7 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-royal hover:text-maroon">
               Learn More <ArrowRight className="h-4 w-4" />

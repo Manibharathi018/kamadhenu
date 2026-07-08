@@ -15,8 +15,8 @@ export const Route = createFileRoute("/shop")({
       sort: (search.sort as string) || undefined,
     }
   },
-  loader: async ({ context: { queryClient } }) => {
-    await queryClient.ensureQueryData({
+  loader: ({ context: { queryClient } }) => {
+    queryClient.prefetchQuery({
       queryKey: ["products"],
       queryFn: fetchProducts,
     });

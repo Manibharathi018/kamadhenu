@@ -13,17 +13,18 @@ import { ProductCard } from "@/components/product-card";
 
 export const Route = createFileRoute("/product/$id")({
   loader: async ({ params, context: { queryClient } }) => {
-    const product = await queryClient.ensureQueryData({
-      queryKey: ["products", params.id],
-      queryFn: () => fetchProduct(params.id),
-    });
+    const [product, allProducts] = await Promise.all([
+      queryClient.ensureQueryData({
+        queryKey: ["products", params.id],
+        queryFn: () => fetchProduct(params.id),
+      }),
+      queryClient.ensureQueryData({
+        queryKey: ["products"],
+        queryFn: fetchProducts,
+      }),
+    ]);
     if (!product) throw notFound();
 
-    // Fetch related products using cached products list
-    const allProducts = await queryClient.ensureQueryData({
-      queryKey: ["products"],
-      queryFn: fetchProducts,
-    });
     const related = allProducts.filter(p => p.id !== product.id).slice(0, 4);
 
     return { product, related, allProducts };

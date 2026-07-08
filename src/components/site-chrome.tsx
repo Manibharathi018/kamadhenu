@@ -49,7 +49,7 @@ export function SiteHeader() {
       <div className="border-b border-border bg-ivory/95 backdrop-blur relative">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 md:px-6">
           <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-            <img src={logoUrl} alt="Kamadhenu Silks Logo" className="h-8 md:h-9 w-auto object-contain rounded-full border border-gold/25" />
+            <img src={logoUrl} alt="Kamadhenu Silks Logo" fetchPriority="high" decoding="async" className="h-8 md:h-9 w-auto object-contain rounded-full border border-gold/25" />
             <span className="font-display text-xl md:text-2xl tracking-tight text-royal">
               Kamadhenu<span className="text-gradient-gold">·</span>Silks
             </span>
