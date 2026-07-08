@@ -56,6 +56,24 @@ function TopLoadingBar() {
   );
 }
 
+function ScrollToTop() {
+  const state = useRouterState();
+  const pathname = state.location.pathname;
+
+  useEffect(() => {
+    // Force instant scroll to top on any new page path transition
+    window.scrollTo(0, 0);
+
+    // Secondary fallback to ensure scroll happens even if height updates later
+    const rafId = requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+    });
+    return () => cancelAnimationFrame(rafId);
+  }, [pathname]);
+
+  return null;
+}
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -167,6 +185,8 @@ function RootComponent() {
           <UserDataProvider>
             {/* Custom hardware-accelerated loading indicator */}
             <TopLoadingBar />
+            {/* Fail-safe scroll reset controller */}
+            <ScrollToTop />
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
             <Outlet />
             <Toaster
