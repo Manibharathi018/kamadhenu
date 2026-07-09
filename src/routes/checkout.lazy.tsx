@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth-context";
 import { createOrder, updateProductQuantity } from "@/lib/supabase";
 import { createRazorpayOrder, verifyRazorpayPayment } from "@/lib/razorpay-server";
 import { CreditCard, Smartphone, Wallet, Check, AlertCircle, ShieldCheck } from "lucide-react";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 export const Route = createLazyFileRoute("/checkout")({
   component: CheckoutPage,
@@ -258,7 +259,15 @@ function CheckoutPage() {
             <ul className="mt-4 space-y-3 max-h-64 overflow-auto pr-2">
               {cart.map(({ product, qty }) => (
                 <li key={product.id} className="flex items-center gap-3 text-sm">
-                  <img src={product.image} decoding="async" loading="lazy" width={48} height={56} alt="" className="h-14 w-12 rounded object-cover" />
+                  <OptimizedImage
+                    src={product.image}
+                    alt=""
+                    loading="lazy"
+                    width={48}
+                    height={56}
+                    containerClassName="h-14 w-12 rounded flex-shrink-0"
+                    className="h-full w-full object-cover"
+                  />
                   <div className="min-w-0 flex-1">
                     <p className="line-clamp-1 font-medium">{product.name}</p>
                     <p className="text-xs text-muted-foreground">Qty {qty}</p>

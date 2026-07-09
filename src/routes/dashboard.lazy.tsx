@@ -8,6 +8,7 @@ import { useSignOut, useUpdateUserMetadata, useUserOrders } from "@/lib/hooks";
 import { useAuth } from "@/lib/auth-context";
 import { useWishlist, wishlistStore } from "@/lib/wishlist-store";
 import { X as XIcon } from "lucide-react";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 export const Route = createLazyFileRoute("/dashboard")({
   component: Dashboard,
@@ -233,7 +234,12 @@ function Wishlist() {
             </button>
             <Link to="/product/$id" params={{ id: p.id }} className="block">
               <div className="aspect-[4/5] overflow-hidden rounded-md">
-                <img src={p.image} decoding="async" alt={p.name} className="h-full w-full object-cover transition-transform group-hover:scale-105" />
+                <OptimizedImage
+                  src={p.image}
+                  alt={p.name}
+                  containerClassName="h-full w-full"
+                  className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                />
               </div>
               <p className="mt-2 font-display">{p.name}</p>
               <p className="font-sans font-semibold tracking-tight text-sm text-royal">{formatINR(p.price)}</p>

@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { useSignUp } from "@/lib/hooks";
 import { useAuth } from "@/lib/auth-context";
-import hero from "@/assets/hero-saree.jpg";
+import hero from "@/assets/hero/hero-saree.webp";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 export const Route = createFileRoute("/signup")({
   head: () => ({ meta: [{ title: "Create Account — Kamadhenu Silks" }] }),
@@ -78,8 +79,15 @@ function SignupPage() {
     <div className="min-h-screen bg-ivory">
       <SiteHeader />
       <div className="mx-auto max-w-7xl grid lg:grid-cols-2 gap-0 px-0 py-0">
-        <div className="relative hidden lg:block">
-          <img src={hero} alt="" className="h-full w-full object-cover" />
+        <div className="relative hidden lg:block min-h-[600px]">
+          <OptimizedImage
+            src={hero}
+            alt=""
+            containerClassName="absolute inset-0 h-full w-full"
+            className="h-full w-full object-cover"
+            loading="eager"
+            fetchPriority="high"
+          />
           <div className="absolute inset-0 bg-gradient-to-tr from-royal/70 via-royal/20 to-transparent" />
           <div className="absolute bottom-10 left-10 right-10 text-royal-foreground">
             <p className="text-[11px] uppercase tracking-[0.3em] text-gradient-gold">Kamadhenu Silks</p>

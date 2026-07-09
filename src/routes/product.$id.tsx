@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-ro
 import { useState, useEffect } from "react";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { AnimatePresence, motion } from "framer-motion";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 import { formatINR } from "@/lib/products";
 import { fetchProduct, fetchProducts } from "@/lib/supabase";
 import { cartStore } from "@/lib/cart-store";
@@ -162,14 +163,14 @@ function ProductPage() {
                     onClick={() => setActiveImage(src)}
                     className={`aspect-square overflow-hidden rounded-md border cursor-pointer hover:border-gold transition-colors ${activeImage === src ? 'border-gold ring-2 ring-gold/20' : 'border-border'}`}
                   >
-                    <img src={src} alt="" className="h-full w-full object-cover" />
+                    <OptimizedImage src={src} alt="" containerClassName="h-full w-full" className="h-full w-full object-cover" />
                   </div>
                 ))}
               </div>
             ) : (
               <div className="grid grid-cols-4 gap-3">
                 <div className="aspect-square overflow-hidden rounded-md border border-gold ring-2 ring-gold/20 cursor-pointer">
-                  <img src={product.image} alt="" className="h-full w-full object-cover" />
+                  <OptimizedImage src={product.image} alt="" containerClassName="h-full w-full" className="h-full w-full object-cover" />
                 </div>
               </div>
             )}

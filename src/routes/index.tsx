@@ -6,23 +6,24 @@ import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { ProductCard } from "@/components/product-card";
 import { products } from "@/lib/products";
 import { useProducts } from "@/lib/hooks";
-import hero1 from "@/assets/herosectionimg1.jpeg";
-import hero2 from "@/assets/herosectionimg2.jpeg";
-import hero3 from "@/assets/herosectionimg3.jpeg";
-import hero4 from "@/assets/herosectionimg4.jpeg";
-import hero5 from "@/assets/herosectionimg5.jpeg";
-import heritage from "@/assets/heritage.jpg";
-import newArrivalsImg from "@/assets/newarrivals.jpg";
-import weddingImg from "@/assets/weddingcollection.jpg";
-import traditionalImg from "@/assets/traditionalcollection.jpg";
-import festiveImg from "@/assets/festivecollection.jpg";
-import bodyButtaImg from "@/assets/Body Butta.webp";
-import borderButtaImg from "@/assets/Border Butta.webp";
-import buttaSareesImg from "@/assets/Butta sarees.webp";
-import korvaiSareesImg from "@/assets/Korvai sarees.webp";
-import pureBrocadeImg from "@/assets/Pure Brocade.webp";
-import pureCheckedButtaImg from "@/assets/Pure Checked Butta.webp";
-import pureJakkadImg from "@/assets/Pure Jakkad.webp";
+import hero1 from "@/assets/hero/herosectionimg1.webp";
+import hero2 from "@/assets/hero/herosectionimg2.webp";
+import hero3 from "@/assets/hero/herosectionimg3.webp";
+import hero4 from "@/assets/hero/herosectionimg4.webp";
+import hero5 from "@/assets/hero/herosectionimg5.webp";
+import heritage from "@/assets/brand/heritage.webp";
+import newArrivalsImg from "@/assets/collections/newarrivals.webp";
+import weddingImg from "@/assets/collections/weddingcollection.webp";
+import traditionalImg from "@/assets/collections/traditionalcollection.webp";
+import festiveImg from "@/assets/collections/festivecollection.webp";
+import bodyButtaImg from "@/assets/categories/body-butta.webp";
+import borderButtaImg from "@/assets/categories/border-butta.webp";
+import buttaSareesImg from "@/assets/categories/butta-sarees.webp";
+import korvaiSareesImg from "@/assets/categories/korvai-sarees.webp";
+import pureBrocadeImg from "@/assets/categories/pure-brocade.webp";
+import pureCheckedButtaImg from "@/assets/categories/pure-checked-butta.webp";
+import pureJakkadImg from "@/assets/categories/pure-jakkad.webp";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 const heroImages = [hero1, hero2, hero3, hero4, hero5];
 
@@ -109,7 +110,7 @@ function HomePage() {
                 style={{ transform: `translate3d(-${currentImageIndex * 100}%, 0px, 0px)` }}
               >
                 {heroImages.map((src, idx) => (
-                  <img
+                  <OptimizedImage
                     key={idx}
                     src={src}
                     alt={`Bride in royal purple Kanchipuram silk saree ${idx + 1}`}
@@ -118,7 +119,8 @@ function HomePage() {
                     loading={idx === 0 ? "eager" : "lazy"}
                     fetchPriority={idx === 0 ? "high" : "low"}
                     decoding={idx === 0 ? "sync" : "async"}
-                    className="h-full w-full flex-shrink-0 object-cover"
+                    containerClassName="h-full w-full flex-shrink-0"
+                    className="h-full w-full object-cover"
                   />
                 ))}
               </div>
@@ -173,7 +175,13 @@ function HomePage() {
                 <div className="relative mx-auto h-28 w-28 md:h-32 md:w-32">
                   <div className="absolute inset-0 rounded-full bg-gradient-to-br from-gold/60 to-royal/60 p-[2px] transition-transform group-hover:scale-105">
                     <div className="h-full w-full overflow-hidden rounded-full bg-ivory">
-                      <img src={c.img} alt={c.name} className="h-full w-full object-cover" loading="lazy" decoding="async" />
+                      <OptimizedImage
+                        src={c.img}
+                        alt={c.name}
+                        loading="lazy"
+                        containerClassName="h-full w-full"
+                        className="h-full w-full object-cover"
+                      />
                     </div>
                   </div>
                 </div>
@@ -194,7 +202,13 @@ function HomePage() {
               <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
                 transition={{ delay: i * 0.08, duration: 0.6 }}
                 className="h-full w-full relative">
-                <img src={col.img} alt={col.title} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 will-change-transform" />
+                <OptimizedImage
+                  src={col.img}
+                  alt={col.title}
+                  loading="lazy"
+                  containerClassName="h-full w-full absolute inset-0"
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 will-change-transform"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-royal via-royal/40 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-4 text-royal-foreground">
                   <p className="text-[9px] uppercase tracking-[0.2em] text-gradient-gold">{col.tag}</p>
@@ -227,7 +241,15 @@ function HomePage() {
         <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-6 py-12 md:grid-cols-2">
           <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}
             className="relative overflow-hidden rounded-2xl shadow-luxe">
-            <img src={heritage} alt="Handwoven Kanchipuram silk" width={1200} height={900} loading="lazy" decoding="async" className="h-full w-full object-cover aspect-[4/3]" />
+            <OptimizedImage
+              src={heritage}
+              alt="Handwoven Kanchipuram silk"
+              width={1200}
+              height={900}
+              loading="lazy"
+              containerClassName="h-full w-full aspect-[4/3]"
+              className="h-full w-full object-cover"
+            />
           </motion.div>
           <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
             <p className="text-[11px] uppercase tracking-[0.3em] text-gradient-gold">Heritage</p>

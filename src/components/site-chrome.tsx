@@ -5,7 +5,8 @@ import { useWishlist } from "@/lib/wishlist-store";
 import { useState, useMemo } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useProducts } from "@/lib/hooks";
-import logoUrl from "@/assets/logo.png";
+import logoUrl from "@/assets/brand/logo.webp";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 export function SiteHeader() {
   const cart = useCart();
@@ -49,7 +50,14 @@ export function SiteHeader() {
       <div className="border-b border-border bg-ivory/95 backdrop-blur relative">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 md:px-6">
           <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-            <img src={logoUrl} alt="Kamadhenu Silks Logo" fetchPriority="high" decoding="async" className="h-8 md:h-9 w-auto object-contain rounded-full border border-gold/25" />
+            <OptimizedImage
+              src={logoUrl}
+              alt="Kamadhenu Silks Logo"
+              fetchPriority="high"
+              loading="eager"
+              containerClassName="h-8 md:h-9 w-8 md:w-9 flex-shrink-0"
+              className="h-full w-full object-contain rounded-full border border-gold/25"
+            />
             <span className="font-display text-xl md:text-2xl tracking-tight text-royal">
               Kamadhenu<span className="text-gradient-gold">·</span>Silks
             </span>
@@ -119,7 +127,12 @@ export function SiteHeader() {
                     <Link key={p.id} to="/product/$id" params={{ id: String(p.id) }}
                       onClick={() => { setIsSearchOpen(false); setSearchQuery(""); }}
                       className="flex items-center gap-3 p-3 hover:bg-muted transition-colors border-b last:border-0 border-border">
-                      <img src={p.image} className="w-10 h-12 object-cover rounded shadow-sm" alt={p.name} />
+                      <OptimizedImage
+                        src={p.image}
+                        containerClassName="w-10 h-12 flex-shrink-0"
+                        className="w-full h-full object-cover rounded shadow-sm"
+                        alt={p.name}
+                      />
                       <div className="flex-1 text-left">
                         <div className="font-medium text-sm text-royal line-clamp-1">{p.name}</div>
                         <div className="text-xs text-muted-foreground mt-0.5">ID: {p.id}</div>
@@ -160,7 +173,12 @@ export function SiteFooter() {
       <div className="mx-auto max-w-7xl px-6 py-16 grid gap-10 md:grid-cols-4">
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <img src={logoUrl} alt="Kamadhenu Silks Logo" className="h-8 w-auto object-contain rounded-full border border-gold/25 bg-white/10" />
+            <OptimizedImage
+              src={logoUrl}
+              containerClassName="h-8 w-8 rounded-full border border-gold/25 bg-white/10 flex-shrink-0"
+              className="h-full w-full object-contain"
+              alt="Kamadhenu Silks Logo"
+            />
             <h3 className="font-display text-2xl">Kamadhenu Silks</h3>
           </div>
           <p className="mt-3 text-sm text-royal-foreground/70">Heirloom Kanchipuram silks, handwoven by master weavers of Tamil Nadu since 1972.</p>

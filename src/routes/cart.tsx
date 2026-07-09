@@ -5,6 +5,7 @@ import { formatINR } from "@/lib/products";
 import { Minus, Plus, X, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 import { AnimatePresence, motion } from "framer-motion";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({ meta: [{ title: "Your Cart — Kamadhenu Silks" }] }),
@@ -44,7 +45,13 @@ function CartPage() {
                     className="grid grid-cols-[100px_1fr_auto] gap-5 rounded-lg border border-border bg-card p-4 md:grid-cols-[120px_1fr_auto] overflow-hidden"
                   >
                     <Link to="/product/$id" params={{ id: product.id }}>
-                      <img src={product.image} alt={product.name} loading="lazy" decoding="async" className="aspect-[4/5] w-full rounded-md object-cover" />
+                      <OptimizedImage
+                        src={product.image}
+                        alt={product.name}
+                        loading="lazy"
+                        containerClassName="aspect-[4/5] w-full rounded-md"
+                        className="h-full w-full object-cover"
+                      />
                     </Link>
                     <div className="min-w-0">
                       <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{product.category}</p>

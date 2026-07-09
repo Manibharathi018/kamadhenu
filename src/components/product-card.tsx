@@ -7,6 +7,8 @@ import { wishlistStore, useWishlist } from "@/lib/wishlist-store";
 import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
 
+import { OptimizedImage } from "@/components/ui/optimized-image";
+
 export const ProductCard = React.memo(function ProductCard({ product }: { product: Product }) {
   const wishlist = useWishlist();
   const isWishlisted = wishlist.some((p) => p.id === product.id);
@@ -36,8 +38,12 @@ export const ProductCard = React.memo(function ProductCard({ product }: { produc
     <Link to="/product/$id" params={{ id: product.id }}
       className="group block">
       <div className="relative aspect-[4/5] overflow-hidden rounded-md bg-secondary">
-        <img src={product.image} alt={product.name} loading="lazy" decoding="async"
-          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 will-change-transform" />
+        <OptimizedImage
+          src={product.image}
+          alt={product.name}
+          loading="lazy"
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 will-change-transform"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-royal/40 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
         <button
           onClick={handleWishlistToggle}

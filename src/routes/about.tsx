@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
-import heritage from "@/assets/heritage.jpg";
+import heritage from "@/assets/brand/heritage.webp";
 import { motion } from "framer-motion";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -34,7 +35,13 @@ function AboutPage() {
           transition={{ duration: 0.7 }}
           className="relative min-h-[350px] md:min-h-full rounded-2xl overflow-hidden shadow-luxe"
         >
-          <img src={heritage} alt="Kamadhenu Silks Heritage" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
+          <OptimizedImage
+            src={heritage}
+            alt="Kamadhenu Silks Heritage"
+            containerClassName="absolute inset-0 h-full w-full"
+            className="h-full w-full object-cover"
+            loading="lazy"
+          />
         </motion.div>
         <motion.div 
           initial={{ opacity: 0, x: 20 }} 

@@ -1,9 +1,9 @@
-import s1 from "@/assets/saree-1.jpg";
-import s2 from "@/assets/saree-2.jpg";
-import s3 from "@/assets/saree-3.jpg";
-import s4 from "@/assets/saree-4.jpg";
-import s5 from "@/assets/saree-5.jpg";
-import s6 from "@/assets/saree-6.jpg";
+import s1 from "@/assets/products/saree-1.webp";
+import s2 from "@/assets/products/saree-2.webp";
+import s3 from "@/assets/products/saree-3.webp";
+import s4 from "@/assets/products/saree-4.webp";
+import s5 from "@/assets/products/saree-5.webp";
+import s6 from "@/assets/products/saree-6.webp";
 
 export type Product = {
   id: string;
