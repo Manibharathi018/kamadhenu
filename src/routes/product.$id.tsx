@@ -109,7 +109,7 @@ function ProductPage() {
   };
 
   const handleVideoCall = () => {
-    const whatsappNumber = "917810065250";
+    const whatsappNumber = "918144698366";
     const text = `Hi, I would like to request a video call for product:\n\n*${product.name}*\n(Product ID: ${product.id})`;
     const encodedText = encodeURIComponent(text);
     window.open(`https://wa.me/${whatsappNumber}?text=${encodedText}`, "_blank", "noopener,noreferrer");

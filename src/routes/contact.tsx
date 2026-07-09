@@ -36,7 +36,7 @@ function ContactPage() {
     e.preventDefault();
     if (!name.trim() || !message.trim()) return;
 
-    const whatsappNumber = "917810065250";
+    const whatsappNumber = "918144698366";
     const text = `Name: ${name}\nPhone: ${phone}\nMessage: ${message}`;
     const encodedText = encodeURIComponent(text);
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedText}`;
@@ -83,7 +83,7 @@ function ContactPage() {
                 </a>
               </div>
             </div>
-            <Item icon={Phone} title="Call / WhatsApp" body="+91 78100 65250" />
+            <Item icon={Phone} title="Call / WhatsApp" body="+91 81446 98366" />
             <Item icon={Mail} title="Email" body="care@kamadhenusilks.com" />
             <div className="flex gap-3">
               <Instagram className="h-5 w-5 text-gold shrink-0 mt-0.5" />
