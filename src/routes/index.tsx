@@ -192,28 +192,28 @@ function HomePage() {
         </div>
       </section>
 
-      {/* COLLECTION CAROUSEL (NOW GRID OF CATEGORIES IN 4:2 LAYOUT) */}
+      {/* COLLECTION CAROUSEL */}
       <section className="mx-auto max-w-7xl px-6 py-8">
         <SectionHeading kicker="Curated For You" title="Our Collections" />
-        <div className="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories.map((c, i) => (
-            <Link key={c.name} to="/shop" search={{ category: c.name }}
-              className="group relative aspect-[3/4] overflow-hidden rounded-lg cursor-pointer block">
+        <div className="mt-6 flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {collections.map((col, i) => (
+            <Link key={col.title} to="/shop" search={col.search}
+              className="snap-start shrink-0 group relative aspect-[2/2.6] w-64 overflow-hidden rounded-lg cursor-pointer block">
               <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-                transition={{ delay: i * 0.05, duration: 0.6 }}
+                transition={{ delay: i * 0.08, duration: 0.6 }}
                 className="h-full w-full relative">
                 <OptimizedImage
-                  src={c.img}
-                  alt={c.name}
+                  src={col.img}
+                  alt={col.title}
                   loading="lazy"
                   containerClassName="h-full w-full absolute inset-0"
                   className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 will-change-transform"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-royal/90 via-royal/30 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-royal via-royal/40 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-4 text-royal-foreground">
-                  <p className="text-[9px] uppercase tracking-[0.2em] text-gradient-gold">Traditional Weave</p>
-                  <h3 className="mt-1 font-display text-lg md:text-xl font-semibold leading-tight text-white">{c.name}</h3>
-                  <span className="mt-2 inline-flex items-center gap-1 text-xs text-gold transition-all duration-300 transform group-hover:translate-x-1">
+                  <p className="text-[9px] uppercase tracking-[0.2em] text-gradient-gold">{col.tag}</p>
+                  <h3 className="mt-1 font-display text-lg">{col.title}</h3>
+                  <span className="mt-2 inline-flex items-center gap-1 text-xs text-gold opacity-0 transition-opacity group-hover:opacity-100">
                     Shop now <ArrowRight className="h-3 w-3" />
                   </span>
                 </div>

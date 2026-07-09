@@ -32,7 +32,7 @@ export function SiteHeader() {
   const nav = [
     { to: "/", label: "Home" },
     { to: "/shop", label: "Sarees" },
-    { to: "/shop", label: "Collections" },
+    { to: "/collections", label: "Collections" },
     { to: "/about", label: "About" },
     { to: "/contact", label: "Contact" },
   ] as const;
