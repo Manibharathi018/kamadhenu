@@ -255,7 +255,7 @@ function HomePage() {
             <p className="text-[11px] uppercase tracking-[0.3em] text-gradient-gold">Heritage</p>
             <h2 className="mt-3 font-display text-4xl text-royal">Woven by hands, blessed by tradition.</h2>
             <p className="mt-5 leading-relaxed text-muted-foreground">
-              From our humble beginnings as Lakshmi Sarees to the trusted name Kamadhenu Silks, we have been preserving the timeless artistry of Kanchipuram silk for over three decades. Every saree is a celebration of tradition, elegance, and uncompromising quality.
+              Established by Mr. Ekambaram as Lakshmi Sarees in 1992, our journey is built on trust, authenticity, and timeless craftsmanship. Reimagined as Kamadhenu Silks in 2018, we continue to celebrate the rich heritage of Kanchipuram silk with every saree we create.
             </p>
             <Link to="/about" className="mt-7 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-royal hover:text-maroon">
               Learn More <ArrowRight className="h-4 w-4" />
