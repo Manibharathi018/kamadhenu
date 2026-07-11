@@ -30,8 +30,8 @@ const heroImages = [hero1, hero2, hero3, hero4, hero5];
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Kamadhenu Silks — Heirloom Kanchipuram Silk Sarees" },
-      { name: "description", content: "Discover handwoven Kanchipuram silk sarees in royal purple, maroon and gold. Silk Mark certified, worldwide shipping." },
+      { title: "Kamadhenu Silks | Pure Kanchipuram Silk Sarees Since 1992" },
+      { name: "description", content: "Discover authentic Kanchipuram silk sarees at Kamadhenu Silks. Since 1992, we offer bridal, wedding, and traditional silk sarees crafted with premium quality." },
     ],
   }),
   component: HomePage,
