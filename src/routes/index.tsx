@@ -82,8 +82,8 @@ function HomePage() {
               <Sparkles className="h-3 w-3 text-gold" /> Since 1972
             </span>
             <h1 className="mt-6 font-display text-4xl leading-[1.05] md:text-6xl">
-              The Finest <br />
-              <span className="text-gradient-gold">Kanchipuram</span> Silks
+              Authentic <br />
+              <span className="text-gradient-gold">Kanchipuram</span> Silks Sarees
             </h1>
             <p className="mt-5 max-w-md text-royal-foreground/75 leading-relaxed">
               Heirloom sarees handwoven by master weavers of Tamil Nadu — pure mulberry silk, real gold zari, certified by the Silk Mark of India.
