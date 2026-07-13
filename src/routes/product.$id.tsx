@@ -91,8 +91,8 @@ function ProductPage() {
     requireAuth(() => {
       if (isSoldOut) return;
       cartStore.add(product as any, qty);
-      toast.success("Proceeding to checkout...", { description: product.name });
-      navigate({ to: "/checkout" });
+      toast.success("Added to cart, proceeding...", { description: product.name });
+      navigate({ to: "/cart" });
     }, "purchase");
   };
 
