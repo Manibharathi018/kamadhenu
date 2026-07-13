@@ -29,7 +29,7 @@ const loadRazorpayScript = (): Promise<boolean> =>
 function CheckoutPage() {
   const cart = useCart();
   const { subtotal, shipping, total } = cartTotals(cart);
-  const [pay, setPay] = useState("rzp");
+  const [pay, setPay] = useState("upi");
   const [done, setDone] = useState(false);
   const [placing, setPlacing] = useState(false);
   const [placingLabel, setPlacingLabel] = useState("Placing Order...");
@@ -150,8 +150,22 @@ function CheckoutPage() {
           rzp.open();
         });
       } else {
-        // Non-Razorpay mock flow (UPI / Card)
-        setPlacingLabel("Placing Order...");
+        // Non-Razorpay flow: WhatsApp Redirect + Save Order
+        setPlacingLabel("Redirecting to WhatsApp...");
+        
+        const shippingAddressStr = `${fullName}\n${phone}\n${email}\n${address}, ${city}, ${state} - ${pincode}`;
+        
+        const orderSummaryStr = cartSnapshot.map(item => 
+          `- ${item.product.name} (Qty: ${item.qty}) - ${formatINR(item.product.price * item.qty)}\n  Image: ${item.product.image}`
+        ).join("\n\n");
+        
+        const whatsappText = `*New Order Placed*\n\n*Order Summary:*\n${orderSummaryStr}\n\n*Subtotal:* ${formatINR(subtotal)}\n*Shipping:* ${shipping === 0 ? "Free" : formatINR(shipping)}\n*Total:* ${formatINR(total)}\n\n*Shipping Address:*\n${shippingAddressStr}`;
+        
+        const encodedText = encodeURIComponent(whatsappText);
+        const whatsappUrl = `https://wa.me/917810065250?text=${encodedText}`;
+        
+        window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+        
         await finalizeOrder({ status: "pending", cartSnapshot });
       }
     } catch (err: any) {
@@ -234,14 +248,18 @@ function CheckoutPage() {
             <Section title="Payment">
               <div className="grid gap-3 sm:grid-cols-3">
                 {[
-                  { id: "upi", t: "UPI", i: Smartphone },
-                  { id: "card", t: "Card", i: CreditCard },
-                  { id: "rzp", t: "Razorpay", i: Wallet },
+                  { id: "upi", t: "WhatsApp / UPI", i: Smartphone, disabled: false },
+                  { id: "card", t: "Card", i: CreditCard, disabled: true },
+                  { id: "rzp", t: "Razorpay", i: Wallet, disabled: true },
                 ].map(o => (
-                  <button key={o.id} type="button" id={`pay-${o.id}`} onClick={() => setPay(o.id)}
-                    className={`flex items-center gap-3 rounded-lg border p-4 transition-colors ${pay === o.id ? "border-gold bg-gold/5" : "border-border bg-card hover:border-gold/50"}`}>
-                    <o.i className="h-5 w-5 text-royal" />
-                    <span className="font-medium">{o.t}</span>
+                  <button key={o.id} type="button" id={`pay-${o.id}`} onClick={() => !o.disabled && setPay(o.id)}
+                    disabled={o.disabled}
+                    className={`flex flex-col items-center justify-center gap-2 rounded-lg border p-4 transition-colors ${pay === o.id ? "border-gold bg-gold/5" : "border-border bg-card hover:border-gold/50"} ${o.disabled ? "opacity-50 cursor-not-allowed" : ""}`}>
+                    <div className="flex items-center gap-3">
+                      <o.i className="h-5 w-5 text-royal" />
+                      <span className="font-medium">{o.t}</span>
+                    </div>
+                    {o.disabled && <span className="text-[10px] text-muted-foreground">Currently unavailable</span>}
                   </button>
                 ))}
               </div>
