@@ -297,13 +297,18 @@ function AdminDashboard() {
                   </thead>
                   <tbody>
                     {filteredOrders.length > 0 ? (
-                      filteredOrders.map((order) => (
+                      filteredOrders.map((order) => {
+                        const orderIndex = orders.findIndex(o => o.id === order.id);
+                        const orderNumber = orders.length - orderIndex;
+                        const displayId = String(orderNumber).padStart(4, '0');
+                        
+                        return (
                         <tr key={order.id} className="border-b border-neutral-700 hover:bg-neutral-700/50">
-                          <td className="py-3 px-4 text-neutral-200">{order.id}</td>
+                          <td className="py-3 px-4 text-neutral-200">{displayId}</td>
                           <td className="py-3 px-4 text-neutral-200">{order.user_name}</td>
                           <td className="py-3 px-4 text-neutral-300 text-xs">{order.user_email}</td>
                           <td className="py-3 px-4 text-neutral-300 text-xs">
-                            {order.items.map((item) => `${item.name} (x${item.quantity})`).join(", ")}
+                            {order.items.map((item) => `${item.name} (ID: ${item.product_id}) (x${item.quantity})`).join(", ")}
                           </td>
                           <td className="py-3 px-4 text-right text-amber-400 font-semibold">
                             ₹{order.total.toLocaleString()}
@@ -327,7 +332,8 @@ function AdminDashboard() {
                             {new Date(order.created_at).toLocaleDateString()}
                           </td>
                         </tr>
-                      ))
+                        );
+                      })
                     ) : (
                       <tr>
                         <td colSpan={7} className="py-8 text-center text-neutral-400">
