@@ -50,6 +50,7 @@ function CheckoutPage() {
     status: "pending" | "processing";
     paymentRef?: string;
     cartSnapshot: typeof cart;
+    skipNavigation?: boolean;
   }) => {
     const shippingAddress = `${address}, ${city}, ${state} - ${pincode}`;
     await createOrder({
@@ -78,7 +79,10 @@ function CheckoutPage() {
 
     cartStore.clear();
     setDone(true);
-    setTimeout(() => navigate({ to: "/dashboard" }), 2400);
+    
+    if (!opts.skipNavigation) {
+      setTimeout(() => navigate({ to: "/dashboard" }), 2400);
+    }
   };
 
   const place = async (e: React.FormEvent) => {
@@ -164,9 +168,10 @@ function CheckoutPage() {
         const encodedText = encodeURIComponent(whatsappText);
         const whatsappUrl = `https://wa.me/917810065250?text=${encodedText}`;
         
-        window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+        await finalizeOrder({ status: "pending", cartSnapshot, skipNavigation: true });
         
-        await finalizeOrder({ status: "pending", cartSnapshot });
+        // Use location.href instead of window.open to prevent popup blocker issues
+        window.location.href = whatsappUrl;
       }
     } catch (err: any) {
       console.error("Checkout error:", err);
