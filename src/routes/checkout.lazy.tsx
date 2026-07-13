@@ -159,8 +159,14 @@ function CheckoutPage() {
         
         const shippingAddressStr = `${fullName}\n${phone}\n${email}\n${address}, ${city}, ${state} - ${pincode}`;
         
-        const orderSummaryStr = cartSnapshot.map(item => 
-          `- ${item.product.name} (Qty: ${item.qty}) - ${formatINR(item.product.price * item.qty)}\n  Image: ${item.product.image}`
+        const orderSummaryStr = cartSnapshot.map((item, index) => 
+          `*Item ${index + 1}*\n` +
+          `• ID: ${item.product.id}\n` +
+          `• Name: ${item.product.name}\n` +
+          `• Qty: ${item.qty}\n` +
+          `• Price: ${formatINR(item.product.price)}\n` +
+          `• Total: ${formatINR(item.product.price * item.qty)}\n` +
+          `• Image: ${item.product.image}`
         ).join("\n\n");
         
         const whatsappText = `*New Order Placed*\n\n*Order Summary:*\n${orderSummaryStr}\n\n*Subtotal:* ${formatINR(subtotal)}\n*Shipping:* ${shipping === 0 ? "Free" : formatINR(shipping)}\n*Total:* ${formatINR(total)}\n\n*Shipping Address:*\n${shippingAddressStr}`;
