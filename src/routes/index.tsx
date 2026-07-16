@@ -79,7 +79,7 @@ function HomePage() {
         <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-6 py-16 md:grid-cols-2 md:py-24">
           <motion.div initial="hidden" animate="show" variants={fadeUp} className="text-royal-foreground">
             <span className="inline-flex items-center gap-2 rounded-full border border-gold/40 px-3 py-1 text-xs uppercase tracking-[0.2em] text-gradient-gold">
-              <Sparkles className="h-3 w-3 text-gold" /> Since 1972
+              <Sparkles className="h-3 w-3 text-gold" /> Since 1992
             </span>
             <h1 className="mt-6 font-display text-4xl leading-[1.05] md:text-6xl">
               Authentic <br />
