@@ -172,7 +172,7 @@ function CheckoutPage() {
         const whatsappText = `*New Order Placed*\n\n*Order Summary:*\n${orderSummaryStr}\n\n*Subtotal:* ${formatINR(subtotal)}\n*Shipping:* ${shipping === 0 ? "Free" : formatINR(shipping)}\n*Total:* ${formatINR(total)}\n\n*Shipping Address:*\n${shippingAddressStr}`;
         
         const encodedText = encodeURIComponent(whatsappText);
-        const whatsappUrl = `https://wa.me/917810065250?text=${encodedText}`;
+        const whatsappUrl = `https://wa.me/918144698366?text=${encodedText}`;
         
         await finalizeOrder({ status: "pending", cartSnapshot, skipNavigation: true });
         
