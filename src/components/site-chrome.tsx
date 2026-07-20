@@ -181,7 +181,7 @@ export function SiteFooter() {
             />
             <h3 className="font-display text-2xl">Kamadhenu Silks</h3>
           </div>
-          <p className="mt-3 text-sm text-royal-foreground/70">Heirloom Kanchipuram silks, handwoven by master weavers of Tamil Nadu since 1972.</p>
+          <p className="mt-3 text-sm text-royal-foreground/70">Heirloom Kanchipuram silks, handwoven by master weavers of Tamil Nadu since 1992.</p>
           <div className="mt-4 flex flex-col gap-2 text-xs text-royal-foreground/80">
             <p>📍 <a href="https://www.google.com/maps/place/Kamadhenu+Silks/@12.8289625,79.7067486,17z/data=!3m1!4b1!4m6!3m5!1s0x3a52c3057ae8d85f:0x645a05aa482389bf!8m2!3d12.8289625!4d79.7067486!16s%2Fg%2F11fm4sb0zj!18m1!1e1?entry=ttu&g_ep=EgoyMDI2MDYyNC4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-colors">#501 Gandhi road, Kanchipuram</a></p>
             <p>📷 <a href="https://instagram.com/kamadhenusilks_kanchipuram" target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-colors">@kamadhenusilks_kanchipuram</a></p>
